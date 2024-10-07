@@ -120,7 +120,7 @@ template <class T>
 TNode<T>* Tlist<T>::find(const T& value) const noexcept {
     TNode<T>* cur = _head;
     while (cur != nullptr) {
-        if (*cur == value) {
+        if (cur->value() == value) {
             return cur;
         }
         cur = cur->next();
