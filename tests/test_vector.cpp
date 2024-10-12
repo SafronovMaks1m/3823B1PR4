@@ -1,7 +1,7 @@
 #include <gtest.h>
 #include "iostream"
 #include "algorithm"
-#include "../lib_vector/TDmassive.h"
+#include "../lib_DMassive/TDmassive.h"
 #include "../lib_vector/TVector.h"
 
 TEST(TestTVectorLib, check_input_keyboard) {
@@ -101,6 +101,32 @@ TEST(TestTVectorLib, check_operator_mul) {
 	TVector<int> vector2 = TVector<int>(arr, 4);
 	int total = vector1 * vector2;
 	ASSERT_EQ(total, 14);
+	delete[] arr;
+}
+
+TEST(TestTVectorLib, check_operator_mul_this_number) {
+	int* arr = new int[4];
+	for (size_t i = 0; i < 4; i++) {
+		arr[i] = i+1;
+	}
+	TVector<int> vector1 = TVector<int>(arr, 4);
+	vector1 *= 5;
+	for (size_t i = 0; i < 4; i++) {
+		EXPECT_EQ(vector1[i], arr[i] * 5);
+	}
+	delete[] arr;
+}
+
+TEST(TestTVectorLib, check_operator_mul_number) {
+	int* arr = new int[4];
+	for (size_t i = 0; i < 4; i++) {
+		arr[i] = i + 1;
+	}
+	TVector<int> vector1 = TVector<int>(arr, 4);
+	TVector<int> vector2 = vector1*4;
+	for (size_t i = 0; i < 4; i++) {
+		EXPECT_EQ(vector2[i], arr[i] * 4);
+	}
 	delete[] arr;
 }
 

@@ -1,4 +1,4 @@
-#include "../lib_vector/TDmassive.h"
+#include "../lib_DMassive/TDmassive.h"
 #include "iostream"
 #include <math.h>
 #include "exception"
@@ -21,13 +21,15 @@ class TVector{
         TVector<T>& operator += (const TVector<T>& obj) noexcept;
         TVector<T>& operator -= (const TVector<T>& obj) noexcept;
         int operator *(const TVector<T>& obj) const noexcept;
+        TVector<T>& operator *=(const T& value) noexcept;
+        TVector<T> operator *(const T& value) const noexcept;
         double search_length() const noexcept;
         bool operator == (const TVector<T>& obj) const noexcept;
         bool operator != (const TVector<T>& obj) const noexcept;
         void print() const noexcept;
         template <class T>
         friend std::istream& operator >> (std::istream& in, TVector<T>& vector) {
-            T value;
+            T value = 0;
             std::cout << "¬ведите " << vector.size() << " чисел: ";
             for (int i = 0; i < vector.size(); i++) {
                 in >> value;
@@ -126,6 +128,23 @@ int TVector<T>::operator *(const TVector<T>& obj) const noexcept{
         s+=_array[i]*obj[i];
     }
     return s;
+}
+
+template<class T>
+TVector<T>& TVector<T>::operator *=(const T& value) noexcept {
+    for (size_t i = 0; i < size(); i++) {
+        _array[i] *= value;
+    }
+    return *this;
+}
+
+template<class T>
+TVector<T> TVector<T>::operator *(const T& value) const noexcept {
+    TVector<T> obj = TVector<T>();
+    for (size_t i = 0; i < size(); i++) {
+        obj[i] = _array[i] * value;
+    }
+    return obj;
 }
 
 template <class T>

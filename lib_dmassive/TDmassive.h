@@ -32,10 +32,12 @@ public:
     inline bool full() const noexcept;
 
     size_t size() const noexcept;
+    size_t deleted() const noexcept;
     size_t capacity() const noexcept;
+    State* states() const noexcept;
     T* data() const noexcept;
 
-    void overexposure(size_t n = 1) noexcept;
+    void overexposure(size_t n) noexcept;
 
     void overexposure_del() noexcept;
 
@@ -84,6 +86,7 @@ public:
 template <typename T>
 TDMassive<T>::TDMassive() {
     _size = 0;
+    _deleted = 0;
     _capacity = STEP_CAPACITY;
     _data = new T[_capacity];
     _states = new State[_capacity];
@@ -94,12 +97,15 @@ TDMassive<T>::TDMassive() {
 
 template <typename T>
 TDMassive<T>::TDMassive(const TDMassive& archive) {
-    _data = archive._data;
-    _states = archive._states;
     _size = archive._size;
     _capacity = archive._capacity;
     _deleted = archive._deleted;
+    _data = new T[_capacity];
+    _states = new State[_capacity];
+    std::copy(archive._data, archive._data + _size, _data);
+    std::copy(archive._states, archive._states + _size, _states);
 }
+
 
 template <typename T>
 TDMassive<T>::TDMassive(const T* arr, const size_t n) {
@@ -156,8 +162,10 @@ TDMassive<T>::TDMassive(const TDMassive& archive, size_t pos, size_t n) {
 }
 
 template<class T>
-TDMassive<T>& TDMassive<T>::operator = (const TDMassive <T>& mas) {
+TDMassive<T>& TDMassive<T>::operator=(const TDMassive <T>& mas) {
     if (&mas != this) {
+        delete[] _data;
+        delete[] _states;
         _size = mas._size;
         _deleted = mas._deleted;
         _capacity = mas._capacity;
@@ -215,8 +223,18 @@ size_t TDMassive<T>::size() const noexcept {
 }
 
 template <typename T>
+size_t TDMassive<T>::deleted() const noexcept {
+    return _deleted;
+}
+
+template <typename T>
 size_t TDMassive<T>::capacity() const noexcept {
     return _capacity;
+}
+
+template <typename T>
+State* TDMassive<T>::states() const noexcept {
+    return _states; 
 }
 
 template <typename T>
@@ -226,9 +244,9 @@ T* TDMassive<T>::data() const noexcept {
 
 template <typename T>
 void TDMassive<T>::overexposure(size_t n) noexcept {
-    int* array = new T[_capacity];
+    _capacity = (n / 15 + 1) * 15;
     State* mas = new State[_capacity];
-    _capacity += (n / 15 + 1) * 15;
+    T* array = new T[_capacity];
     for (size_t i = 0; i < _capacity; i++) {
         if (i < _size) {
             array[i] = _data[i];
@@ -238,26 +256,27 @@ void TDMassive<T>::overexposure(size_t n) noexcept {
             mas[i] = State::empty;
         }
     }
-    _states = mas;
     _data = array;
-
+    _states = mas;
 }
+
 template <typename T>
 void TDMassive<T>::overexposure_del() noexcept {
-    int count = 0;
-    for (int i = _size - 1; i >= 0; i--) {
-        if (_states[i] == State::deleted)
-            count++;
-        else if (count != 0) {
-            for (size_t j = i + count + 1; j < _size; j++) {
-                _data[j - count] = _data[j];
-                _states[j] = State::empty;
-                _states[j - count] = State::busy;
-            }
-            _size -= count;
-            _deleted -= count;
-            count = 0;
+    size_t total = 0;
+    for (size_t i = 0; i < _size; i++) {
+        if (_states[i] == State::deleted) {
+            total++;
         }
+        else if (total > 0) {
+            _data[i - total] = _data[i];
+            _states[i - total] = _states[i];
+        }
+    }
+    _size -= total;
+    _deleted = 0;
+
+    for (size_t i = _size; i < _capacity; i++) {
+        _states[i] = State::empty;
     }
 }
 
@@ -267,7 +286,7 @@ void TDMassive<T>::push_back(T value) noexcept {
         if (_deleted != 0)
             overexposure_del();
         else
-            overexposure();
+            overexposure(_size+1);
     }
     _data[_size] = value;
     _states[_size] = State::busy;
@@ -289,7 +308,7 @@ void TDMassive<T>::push_front(T value) noexcept {
         if (_deleted != 0)
             overexposure_del();
         else
-            overexposure();
+            overexposure(_size + 1);
     }
     _size++;
     for (int i = _size; i > 0; i--) {
@@ -315,14 +334,15 @@ void TDMassive<T>::pop_front() {
             _deleted += 1;
         }
     }
-    if (double(_deleted) * 100 / double(_size) >= 40) {
+    double s = double(_deleted) * 100 / double(_size);
+    if (s >= 40) {
         overexposure_del();
     }
 }
 
 template <typename T>
 TDMassive<T>& TDMassive<T>::insert(T value, size_t pos) {
-    if (_size < pos) {
+    if (_size < pos || pos>size()) {
         throw std::logic_error("Error in function \
 \"TArchive<T>& insert(T value, size_t pos)\": wrong position value.");
     }
@@ -330,7 +350,7 @@ TDMassive<T>& TDMassive<T>::insert(T value, size_t pos) {
         if (_deleted != 0)
             overexposure_del();
         else
-            overexposure();
+            overexposure(_size + 1);
     }
     for (size_t i = _size; i > pos; i--) {
         _data[i] = _data[i - 1];
@@ -396,7 +416,7 @@ TDMassive<T>& TDMassive<T>::remove_first(T value) noexcept {
 
 template <typename T>
 TDMassive<T>& TDMassive<T>::remove_last(T value) noexcept {
-    for (size_t i = _size - 1; i >= 0; i--) {
+    for (int i = _size - 1; i >= 0; i--) {
         if (_data[i] == value) {
             if (i == _size - 1) {
                 _states[i] = State::empty;
@@ -449,13 +469,15 @@ size_t TDMassive<T>::find_first(T value) const noexcept {
     for (size_t i = 0; i < _size; i++) {
         if (_data[i] == value) return i;
     }
+    return -1;
 }
 
 template <typename T>
 size_t TDMassive<T>::find_last(T value) const noexcept {
-    for (size_t i = _size - 1; i >= 0; i--) {
+    for (int i = _size - 1; i >= 0; i--) {
         if (_data[i] == value) return i;
     }
+    return -1;
 }
 
 template <typename T>
@@ -479,20 +501,7 @@ void TDMassive<T>::swap(TDMassive& archive) noexcept {
 
 template <typename T>
 TDMassive<T>& TDMassive<T>::assign(const TDMassive& archive) noexcept {
-    _size = archive._size;
-    _deleted = archive._deleted;
-    _capacity = archive._capacity;
-    delete[] _data; delete[] _states;
-    _data = new T[_capacity]; _states = new State[_capacity];
-    for (size_t i = 0; i < _capacity; i++) {
-        if (i < _size) {
-            _data[i] = archive._data[i];
-            _states[i] = archive._states[i];
-        }
-        else {
-            _states[i] = State::empty;
-        }
-    }
+    (*this) = archive;
     return *this;
 }
 
@@ -539,7 +548,7 @@ TDMassive<T>& TDMassive<T>::insert(const T* arr, size_t n, size_t pos) {
             overexposure_del();
         }
         else {
-            overexposure(n);
+            overexposure(n+_capacity);
         }
     }
 
@@ -552,13 +561,14 @@ TDMassive<T>& TDMassive<T>::insert(const T* arr, size_t n, size_t pos) {
         _states[i] = State::busy;
     }
     _size += n;
+    return *this;
 }
 
 template <typename T>
 TDMassive<T>& TDMassive<T>::erase(size_t pos, size_t n) {
     if (pos >= _size)
         return *this;
-    for (int i = pos; i <= n; i++) {
+    for (int i = pos; i < pos+n; i++) {
         if (i < _size) {
             _states[i] = State::deleted;
             _deleted++;
@@ -566,6 +576,10 @@ TDMassive<T>& TDMassive<T>::erase(size_t pos, size_t n) {
         else
             break;
     }
+    if (double(_deleted) * 100 / double(_size) >= 40) {
+        overexposure_del();
+    }
+    return *this;
 }
 
 
