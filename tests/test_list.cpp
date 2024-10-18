@@ -7,11 +7,6 @@ protected:
 	Tlist<int> list = Tlist<int>();
 };
 
-TEST_F(TestListsLib, check_constructor) {
-	EXPECT_EQ(list._head, list._tail);
-	EXPECT_EQ(list._head, 1);
-}
-
 TEST_F(TestListsLib, check_func_push_front) {
 	list.push_front(1);
 	list.push_front(2);
@@ -111,7 +106,7 @@ TEST_F(TestListsLib, check_func_erase_node) {
 	list.push_back(8);
 	TNode<int>* val = list.find(7);
 	list.erase(val);
-	ASSERT_EQ(list._tail->next()->next()->value(), 8);
+	ASSERT_EQ(list._head->next()->next()->value(), 8);
 }
 
 TEST_F(TestListsLib, check_func_erase_node_throw) {
@@ -147,4 +142,37 @@ TEST_F(TestListsLib, check_func_replace_pos) {
 	list.push_back(7);
 	list.replace(1, 9);
 	ASSERT_EQ(list._head->next()->value(), 9);
+}
+
+TEST(TestTListsLib, check_algo_reverse_list) {
+	Tlist<int> s = Tlist<int>();
+	for (int i = 0; i < 10; i++) {
+		s.push_back(i);
+	}
+	TNode<int>* l = s.find(2);
+	s._tail->next(l);
+	EXPECT_EQ(s.check_cycle_reverse_list(), 1);
+	s._tail->next(nullptr);
+}
+
+TEST(TestTListsLib, check_algo_rabbit_and_turtle) {
+	Tlist<int> s = Tlist<int>();
+	for (int i = 0; i < 10; i++) {
+		s.push_back(i);
+	}
+	TNode<int>* l = s.find(2);
+	s._tail->next(l);
+	EXPECT_EQ(s.check_cycle_rabbit_turtle(), 1);
+	s._tail->next(nullptr);
+}
+
+TEST(TestTListsLib, check_test_algo) {
+	Tlist<int> s = Tlist<int>();
+	for (int i = 0; i < 1000000; i++) {
+		s.push_back(i);
+	}
+	TNode<int>* l = s.find(2);
+	s._tail->next(l);
+	EXPECT_GT(s.test_time_algorithm_rabbit_turtle(), s.test_time_algorithm_reverse_list());
+	s._tail->next(nullptr);
 }

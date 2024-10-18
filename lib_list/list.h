@@ -1,6 +1,7 @@
 #include "node.h"
 #include "iostream"
 #include "execution"
+#include <chrono>
 
 template <class T>
 class Tlist {
@@ -29,12 +30,15 @@ public:
     int get_size() const noexcept;
     void print() const noexcept;
     void qsort() noexcept;
+    bool check_cycle_rabbit_turtle() noexcept;
+    bool check_cycle_reverse_list() noexcept;
+    long int test_time_algorithm_rabbit_turtle() noexcept;
+    long int test_time_algorithm_reverse_list() noexcept;
 };
 
 template <class T>
 Tlist<T>::Tlist() {
-    _head = new TNode<T>();
-    _tail = _head;
+    _head = _tail = nullptr;
 }
 
 template <class T>
@@ -316,3 +320,53 @@ void Tlist<T>::qsort() noexcept {
         cur--;
     }
 };
+
+template<class T>
+bool Tlist<T>::check_cycle_rabbit_turtle() noexcept {
+    TNode<T>* turtle = _head;
+    TNode<T>* rabbit = _head;
+
+    while (rabbit != nullptr && rabbit->next() != nullptr) {
+        rabbit = rabbit->next()->next();
+        turtle = turtle->next();
+
+        if (rabbit == turtle) {
+            return true;
+        }
+    }
+    return false;
+}
+
+template <class T>
+bool Tlist<T>::check_cycle_reverse_list() noexcept {
+    TNode<T>* cur = _head->next();
+    TNode<T>* prev = _head;
+    while (cur->next() != nullptr) {
+        TNode<T>* next = cur->next();
+        cur->next(prev);
+        if (next == _head) {
+            return true;
+        }
+        prev = cur;
+        cur = next;
+    }
+    return false;
+}
+
+template <class T>
+long int Tlist<T>::test_time_algorithm_rabbit_turtle() noexcept {
+    auto start = std::chrono::high_resolution_clock::now();
+    bool has_cycle_rabbit_turtle = this->check_cycle_rabbit_turtle();
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration_rabbit_turtle = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+    return duration_rabbit_turtle;
+}
+
+template <class T>
+long int Tlist<T>::test_time_algorithm_reverse_list() noexcept {
+    auto start = std::chrono::high_resolution_clock::now();
+    bool has_cycle_reverse_list = this->check_cycle_reverse_list();
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration_reverse_list = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+    return duration_reverse_list;
+}
