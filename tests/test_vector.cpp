@@ -4,14 +4,6 @@
 #include "../lib_DMassive/TDmassive.h"
 #include "../lib_vector/TVector.h"
 
-TEST(TestTVectorLib, check_input_keyboard) {
-	TVector<int> vector = TVector<int>(4);
-	std::cin >> vector;
-	for (size_t i = 0; i < vector.size(); i++) {
-		EXPECT_EQ(vector[i], i + 1);
-	}
-}
-
 TEST(TestTVectorLib, check_constructer_mas) {
 	int* arr = new int[4];
 	for (size_t i = 0; i < 4; i++) {

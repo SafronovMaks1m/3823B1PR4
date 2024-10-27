@@ -2,13 +2,16 @@
 #include "iostream"
 #include <math.h>
 #include "exception"
+#include "algorithm"
+#pragma once
 
 template<class T>
 class TVector{
-    private:
+    protected:
         TDMassive<T> _array;
+        size_t _start_index;
     public:
-        TVector(const size_t size = 5);
+        TVector(const size_t size = 5, int value = 0, size_t start_index = 0);
         TVector(const T* mas, const size_t size);
         TVector(const TVector& vector);
         TVector<T>& operator = (const TVector <T>& vector);
@@ -16,48 +19,46 @@ class TVector{
         const T& operator[](int index) const noexcept;
         T& operator[](int index) noexcept;
         size_t size() const noexcept;
-        TVector<T> operator+(const TVector<T>& obj) const noexcept;
-        TVector<T> operator-(const TVector<T>& obj) const noexcept;
-        TVector<T>& operator += (const TVector<T>& obj) noexcept;
-        TVector<T>& operator -= (const TVector<T>& obj) noexcept;
-        int operator *(const TVector<T>& obj) const noexcept;
+        size_t start_index() const noexcept;
+        TVector<T> operator+(const TVector<T>& obj) const;
+        TVector<T> operator-(const TVector<T>& obj) const;
+        TVector<T>& operator += (const TVector<T>& obj);
+        TVector<T>& operator -= (const TVector<T>& obj);
+        int operator *(const TVector<T>& obj) const;
         TVector<T>& operator *=(const T& value) noexcept;
         TVector<T> operator *(const T& value) const noexcept;
         double search_length() const noexcept;
-        bool operator == (const TVector<T>& obj) const noexcept;
-        bool operator != (const TVector<T>& obj) const noexcept;
-        void print() const noexcept;
-        template <class T>
-        friend std::istream& operator >> (std::istream& in, TVector<T>& vector) {
-            T value = 0;
-            std::cout << "Введите " << vector.size() << " чисел: ";
-            for (int i = 0; i < vector.size(); i++) {
-                in >> value;
-                vector[i] = value;
-            }
-            std::cout << std::endl;
-            return in;
-        }
+        bool operator == (const TVector<T>& obj) const;
+        bool operator != (const TVector<T>& obj) const;
+        void print() const;
 };
 
 template <class T>
-TVector<T>::TVector(const size_t size){
-    _array = TDMassive<T>(size);
+TVector<T>::TVector(const size_t size, int value, size_t start_index){
+    _start_index = start_index;
+    _array = TDMassive<T>(size, value);
 }
 
 template <class T>
 TVector<T>::TVector(const T* mas, const size_t size){
     _array = TDMassive<T>(mas, size);
+    size_t i = 0;
+    while(mas[i] == 0 && i<size){
+        _start_index++;
+        i++;
+    }
 }
 
 template <class T>
 TVector<T>::TVector(const TVector& vector){
     _array = vector._array; 
+    _start_index = vector._start_index;
 }
 
 template <class T>
 TVector<T>& TVector<T>::operator =(const TVector <T>& vector){
     _array = vector._array;
+    _start_index = vector._start_index;
     return *this;
 }
 
@@ -83,7 +84,12 @@ size_t TVector<T>::size() const noexcept{
 }
 
 template <class T>
-TVector<T> TVector<T>::operator+(const TVector<T>& obj) const noexcept{
+size_t TVector<T>::start_index() const noexcept{
+    return _start_index;
+}
+
+template <class T>
+TVector<T> TVector<T>::operator+(const TVector<T>& obj) const{
     check_lenght(obj.size());
     TVector<T> new_vector = TVector(size());
     for (size_t i = 0; i<size(); i++){
@@ -93,7 +99,7 @@ TVector<T> TVector<T>::operator+(const TVector<T>& obj) const noexcept{
 }
 
 template <class T>
-TVector<T> TVector<T>::operator-(const TVector<T>& obj) const noexcept{
+TVector<T> TVector<T>::operator-(const TVector<T>& obj) const{
     check_lenght(obj.size());
     TVector<T> new_vector = TVector(size());
     for (size_t i = 0; i<size(); i++){
@@ -103,7 +109,7 @@ TVector<T> TVector<T>::operator-(const TVector<T>& obj) const noexcept{
 }
 
 template <class T>
-TVector<T>& TVector<T>::operator+=(const TVector<T>& obj) noexcept{
+TVector<T>& TVector<T>::operator+=(const TVector<T>& obj){
     check_lenght(obj.size());
     for (size_t i = 0; i<size(); i++){
         _array[i]+= obj[i];
@@ -112,7 +118,7 @@ TVector<T>& TVector<T>::operator+=(const TVector<T>& obj) noexcept{
 }
 
 template <class T>
-TVector<T>& TVector<T>::operator-=(const TVector<T>& obj) noexcept{
+TVector<T>& TVector<T>::operator-=(const TVector<T>& obj){
     check_lenght(obj.size());
     for (size_t i = 0; i<size(); i++){
         _array[i]-= obj[i];
@@ -121,7 +127,7 @@ TVector<T>& TVector<T>::operator-=(const TVector<T>& obj) noexcept{
 }
 
 template <class T>
-int TVector<T>::operator *(const TVector<T>& obj) const noexcept{
+int TVector<T>::operator *(const TVector<T>& obj) const{
     check_lenght(obj.size());
     T s = 0;
     for (size_t i = 0; i<size(); i++){
@@ -153,7 +159,7 @@ double TVector<T>::search_length() const noexcept{
 }
 
 template <class T>
-bool TVector<T>::operator==(const TVector<T>& obj) const noexcept{
+bool TVector<T>::operator==(const TVector<T>& obj) const{
     check_lenght(obj.size());
     for (size_t i = 0; i<size(); i++){
         if (_array[i]!=obj[i]){
@@ -164,14 +170,25 @@ bool TVector<T>::operator==(const TVector<T>& obj) const noexcept{
 }
 
 template <class T>
-bool TVector<T>::operator!=(const TVector<T>& obj) const noexcept{
+bool TVector<T>::operator!=(const TVector<T>& obj) const{
     check_lenght(obj.size());
     return !(this->operator==(obj));
 }
 
 template <class T>
-void TVector<T>::print() const noexcept{
+void TVector<T>::print() const{
     _array.print();
+}
+template <class T>
+std::istream& operator >> (std::istream& in, TVector<T>& vector) {
+    T value = 0;
+    std::cout << "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ " << vector.size() << " пїЅпїЅпїЅпїЅпїЅ: ";
+    for (int i = 0; i < vector.size(); i++) {
+        in >> value;
+        vector[i] = value;
+    }
+    std::cout << std::endl;
+    return in;
 }
 
 
