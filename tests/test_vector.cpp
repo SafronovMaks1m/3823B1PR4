@@ -4,14 +4,14 @@
 #include "../lib_DMassive/TDmassive.h"
 #include "../lib_vector/TVector.h"
 
-TEST(TestTVectorLib, check_constructer_mas) {
+TEST(TestTVectorLib, check_constructor_mas) {
 	int* arr = new int[4];
 	for (size_t i = 0; i < 4; i++) {
-		arr[i] = i;
+		arr[i] = i+1;
 	}
 	TVector<int> vector = TVector<int>(arr, 4);
 	for (size_t i = 0; i < 4; i++) {
-		EXPECT_EQ(vector[i], i);
+		EXPECT_EQ(vector[i], i+1);
 	}
 	delete[] arr;
 }
@@ -72,7 +72,7 @@ TEST(TestTVectorLib, check_operator_sub_assingment) {
 	int* mas = new int[4];
 	for (size_t i = 0; i < 4; i++) {
 		arr[i] = i + 3;
-		mas[i] = i;
+		mas[i] = i+1;
 	}
 	TVector<int> vector1 = TVector<int>(arr, 4);
 	TVector<int> vector2 = TVector<int>(mas, 4);
