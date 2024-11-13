@@ -11,7 +11,7 @@ class TNode {
         TNode<T>& operator = (const TNode <T>& node);
         TNode <T>* next();
         void next(TNode<T>* node);
-        bool operator == (const TNode <T> node) const noexcept;
+        bool operator == (const TNode <T>* node) const noexcept;
         bool operator == (const T& value) const noexcept;
         T value();
         void value(T val);
@@ -59,7 +59,7 @@ void TNode<T>::next(TNode<T>* node) {
 }
 
 template<class T>
-bool TNode<T>::operator == (const TNode <T> node) const noexcept {
+bool TNode<T>::operator == (const TNode <T>* node) const noexcept {
     return _value == node._value;
 }
 
