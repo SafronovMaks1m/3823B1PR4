@@ -186,6 +186,10 @@ TEST_F(TestListsLib, check_iterator) {
 	size_t total = 0;
 	for (Tlist<int>::iterator it = list.begin(); it != list.end(); it++) {
 		total++;
+<<<<<<< HEAD
+=======
+		EXPECT_EQ(it, total);
+>>>>>>> bb24a4b49d7a162964eb4f279f61bcbde60a9049
 		EXPECT_EQ(*it, total);
 	}
 	EXPECT_EQ(total, 5);

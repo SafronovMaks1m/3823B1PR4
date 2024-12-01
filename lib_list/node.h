@@ -5,6 +5,7 @@ template <class T>
 class TNode {
     T _value;
     TNode <T>* _pnext;
+<<<<<<< HEAD
 public:
     TNode(T value = 1, TNode <T>* node = nullptr);
     TNode(const TNode<T>& node);
@@ -16,6 +17,18 @@ public:
     T& value();
     const T& value() const;
     void value(T val);
+=======
+    public:
+        TNode(T value = 1, TNode <T>* node = nullptr);
+        TNode(const TNode<T>& node);
+        TNode<T>& operator = (const TNode <T>& node);
+        TNode <T>* next();
+        void next(TNode<T>* node);
+        bool operator == (const TNode <T>* node) const noexcept;
+        bool operator == (const T& value) const noexcept;
+        T value();
+        void value(T val);
+>>>>>>> bb24a4b49d7a162964eb4f279f61bcbde60a9049
 };
 
 template <class T>

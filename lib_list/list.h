@@ -66,12 +66,19 @@ private:
         bool operator==(const TIterator& iter) const noexcept {
             return _pcur == iter._pcur;
         }
+<<<<<<< HEAD
         const T& operator*() const {
             if (_pcur == nullptr) throw std::logic_error("nullptr iterator");
             return _pcur->value();
         }
 
         T& operator*() {
+=======
+        bool operator==(const T& value) const noexcept {
+            return _pcur->value() == value;
+        }
+        T operator*() {
+>>>>>>> bb24a4b49d7a162964eb4f279f61bcbde60a9049
             if (_pcur == nullptr) throw std::logic_error("nullptr iterator");
             return _pcur->value();
         }
