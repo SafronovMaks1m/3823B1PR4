@@ -1,24 +1,23 @@
-#include <iostream>
+п»ї#include <iostream>
 #include <stdexcept>
+#include "../lib_dmassive/TDmassive.h"
 
 template <class T>
 class TStack {
 public:
-    T* _data;
+    TDMassive<T> _data;
     size_t _size;
     size_t _top;
 public:
     TStack(size_t size = 20);
 
-    ~TStack();
-
-    inline bool isEmpty() const noexcept;//тоже самое для vector _data.size() == 0  
+    inline bool isEmpty() const noexcept;//С‚РѕР¶Рµ СЃР°РјРѕРµ РґР»СЏ vector _data.size() == 0  
 
     inline bool isFull() const noexcept;
 
-    void push(T val); //исклюсение на то есть ли там элемент  
+    void push(T val); //РёСЃРєР»СЋСЃРµРЅРёРµ РЅР° С‚Рѕ РµСЃС‚СЊ Р»Рё С‚Р°Рј СЌР»РµРјРµРЅС‚  
 
-    //void push только для vector  
+    //void push С‚РѕР»СЊРєРѕ РґР»СЏ vector  
 
     void pop();
 
@@ -27,15 +26,9 @@ public:
 
 template <class T>
 TStack<T>::TStack(size_t size) {
-    _data = new T[size];
+    _data = TDMassive<T>(size);
     _size = size;
     _top = -1;
-}
-
-template <class T>
-TStack<T>::~TStack() {
-    delete[] _data;
-    _data = nullptr;
 }
 
 template <class T>
@@ -53,7 +46,7 @@ void TStack<T>::push(T val) {
     if (isFull()) {
         throw std::overflow_error("TStack is full");
     }
-    _top += 1;
+    _top++;
     _data[_top] = val;
 }
 

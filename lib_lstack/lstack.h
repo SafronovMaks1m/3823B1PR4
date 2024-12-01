@@ -6,8 +6,12 @@
 template <class T>
 class TLStack {
 public:
+    int _size;
     Tlist<T> _data;
 public:
+    TLStack(int n = MAX) {
+        _size = n;
+    }
 
     inline bool isEmpty() const noexcept; 
 
@@ -27,7 +31,7 @@ inline bool TLStack<T>::isEmpty() const noexcept {
 
 template <class T>
 inline bool TLStack<T>::isFull() const noexcept {
-    return _data.get_size() == MAX;
+    return _data.get_size() == _size;
 }
 
 template<class T>

@@ -2,13 +2,17 @@
 #include "iostream"
 #include "execution"
 #include <chrono>
+#pragma once
 
 template <class T>
 class Tlist {
+private:
+    class TIterator;
 public:
     TNode<T>* _head;
     TNode<T>* _tail;
 public:
+    typedef TIterator iterator;
     Tlist();
     Tlist(const Tlist<T>& list);
     Tlist<T>& operator=(const Tlist<T>& list);
@@ -22,6 +26,12 @@ public:
     TNode<T>* find_pres(TNode<T>* node) const noexcept;
     void pop_front();
     void pop_back();
+    TIterator begin() {
+        return TIterator(_head);
+    }
+    TIterator end() {
+        return TIterator(nullptr);
+    }
     void erase(TNode <T>* node);
     void erase(size_t pos);
     bool isEmpty() const noexcept;
@@ -34,6 +44,38 @@ public:
     bool check_cycle_reverse_list() noexcept;
     long int test_time_algorithm_rabbit_turtle() noexcept;
     long int test_time_algorithm_reverse_list() noexcept;
+private:
+    class TIterator {
+        TNode<T>* _pcur;
+    public:
+        TIterator(TNode <T>* cur) {
+            _pcur = cur;
+        }
+        TIterator operator++(int) {
+            TIterator prev = (*this);
+            _pcur = _pcur->next();
+            return prev;
+        }
+        TIterator& operator++() {
+            _pcur = _pcur->next();
+            return *this;
+        }
+        bool operator!=(const TIterator& iter) const noexcept {
+            return _pcur != iter._pcur;
+        }
+        bool operator==(const TIterator& iter) const noexcept {
+            return _pcur == iter._pcur;
+        }
+        const T& operator*() const {
+            if (_pcur == nullptr) throw std::logic_error("nullptr iterator");
+            return _pcur->value();
+        }
+
+        T& operator*() {
+            if (_pcur == nullptr) throw std::logic_error("nullptr iterator");
+            return _pcur->value();
+        }
+    };
 };
 
 template <class T>

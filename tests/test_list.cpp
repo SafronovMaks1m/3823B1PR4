@@ -176,3 +176,17 @@ TEST(TestTListsLib, check_test_algo) {
 	EXPECT_GT(s.test_time_algorithm_rabbit_turtle(), s.test_time_algorithm_reverse_list());
 	s._tail->next(nullptr);
 }
+
+TEST_F(TestListsLib, check_iterator) {
+	list.push_back(1);
+	list.push_back(2);
+	list.push_back(3);
+	list.push_back(4);
+	list.push_back(5);
+	size_t total = 0;
+	for (Tlist<int>::iterator it = list.begin(); it != list.end(); it++) {
+		total++;
+		EXPECT_EQ(*it, total);
+	}
+	EXPECT_EQ(total, 5);
+}

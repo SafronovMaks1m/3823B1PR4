@@ -1,5 +1,5 @@
-#include "C:\3823B1PR4\lib_parser\parser.h"
-#include "C:\3823B1PR4\lib_stack\stack.h"
+#include "../lib_parser/parser.h"
+#include "../lib_stack/stack.h"
 
 bool check_expression(std::string mas) {
     TStack<char> stack = TStack<char>(mas.length());
