@@ -1,4 +1,4 @@
-﻿#include "iostream"
+#include "iostream"
 #pragma once
 
 template <class T>
@@ -9,7 +9,8 @@ public:
     TNode(T value = 1, TNode <T>* node = nullptr);
     TNode(const TNode<T>& node);
     TNode<T>& operator = (const TNode <T>& node);
-    TNode <T>* next();
+    const TNode <T>* next() const;
+    TNode <T>* next() noexcept;
     void next(TNode<T>* node);
     bool operator == (const TNode <T>* node) const noexcept;
     bool operator == (const T& value) const noexcept;
@@ -55,18 +56,23 @@ TNode<T>& TNode<T>::operator=(const TNode <T>& node) {
 }
 
 template <class T>
-TNode <T>* TNode<T>::next() {
+const TNode <T>* TNode<T>::next() const{
     return _pnext;
 }
 
 template <class T>
-void TNode<T>::next(TNode<T>* node) {
+TNode <T>* TNode<T>::next() noexcept{
+    return _pnext;
+}
+
+template <class T>
+void TNode<T>::next(TNode<T>* node){
     _pnext = node;
 }
 
 template<class T>
 bool TNode<T>::operator == (const TNode <T>* node) const noexcept {
-    return _value == node._value;
+    return _value == node->_value;
 }
 
 template<class T>

@@ -1,18 +1,13 @@
 ﻿#include <iostream>
 #include <string>
 #include <cmath>
+#include "../lib_list/list.h"
+#include "../lib_list/node.h"
 #include "exception"
-#include "..//lib_list/list.h"
-#include "..//lib_list/node.h"
-#include "..//lib_stack/stack.h"
-
-enum ParsingErrorType {
-    EXTRA_BRACKET = 1,
-    MISSING_BRACKET = 2,
-    MISMATCHED_BRACKET = 3,
-    UNVALID_BRACKET = 4,
-    NON_ERROR = 0
-};
+#include "../lib_stack/stack.h"
+#include "map"
+#include "../lib_lexem/operations.h"
+#include <limits>
 
 enum LexemType {
     BRACKET,
@@ -49,6 +44,7 @@ class Lexem {
 protected:
     std::string _name;
     LexemType _type;
+    float _value;
 public:
     Lexem(std::string name, LexemType type) : _name(name), _type(type) {}
     Lexem() : _name(""), _type(NONE) {}
@@ -59,13 +55,15 @@ public:
     std::string name() { return _name; }
     LexemType type() { return _type; }
 
+    void set_value(float value) { _value = value; }
+    float value() { return _value; }
+
     friend std::ostream& operator<<(std::ostream& out, const Lexem& lexem);
 };
 
 std::ostream& operator<<(std::ostream& out, const Lexem& lexem) { out << lexem._name; return out; }
 
 class FloatConst : public Lexem {
-    float _value;
 public:
     FloatConst(std::string exp) : Lexem(exp, FLOAT_CONST) {
         int curr_pos = 0;
@@ -87,13 +85,9 @@ public:
         }
         _value = result;
     }
-
-    void set_value(float value) { _value = value; }
-    float value() { return _value; }
 };
 
 class IntConst : public Lexem {
-    int _value;
 public:
     IntConst(std::string exp) : Lexem(exp, INT_CONST) {
         int result = 0;
@@ -102,9 +96,6 @@ public:
         }
         _value = result;
     }
-
-    void set_value(int value) { _value = value; }
-    int value() { return _value; }
 };
 
 class Bracket : public Lexem {
@@ -120,25 +111,63 @@ public:
 class Operation : public Lexem {
 public:
     Operation(std::string exp) : Lexem(exp, OPERATION) {}
+    float value() = delete;
+    void set_value(float value) = delete;
 };
 
 class Function : public Lexem {
 public:
     Function(std::string exp) : Lexem(exp, FUNCTION) {}
+    float value() = delete;
+    void set_value(float value) = delete;
 };
 
 class Expression {
     Tlist<Lexem> _expression;
-    // <what type?> polish_record;
+    std::map<std::string, int> priority;
 public:
-    Expression(std::string exp) { delete_spaces(&exp); parse(exp); check();}
-    //void set_vars_values();
-    //void calculate();
+    Expression(std::string exp) { 
+        delete_spaces(&exp); parse(exp); check();
+        priority = { {"+", 1}, {"-", 1}, {"*", 2}, {"/", 2}, {"^", 3}, 
+        {"sin", 4}, {"cos", 4}, {"tg", 4}, {"ctg", 4}, {"(", 5} };
+        build_polish_record();
+    }
+    float calculate(){
+        set_vars_values();
+        TStack<float> stack;
+        Operations op;
+        for (auto it = _expression.begin(); it!=_expression.end(); it++){
+            if ((*it).type() == INT_CONST || (*it).type() == FLOAT_CONST || (*it).type() == VARIABLE){
+                stack.push((*it).value());
+            }
+            else{
+                if ((*it).type() == FUNCTION){
+                    float res = op.execute((*it).name(), stack.top());
+                    stack.pop();
+                    stack.push(res);
+                }
+                else{
+                    float cur = stack.top();
+                    stack.pop();
+                    float res = op.execute((*it).name(), stack.top(), cur);
+                    stack.pop();
+                    stack.push(res);
+                }
+            }
+        }
+        return stack.top();
+    }
     void print() {
-        // std::cout << _expression;  // ���� � ������ ���� <<
         for (auto it = _expression.begin(); it != _expression.end(); it++) {
             std::cout << *it << " ";
         }
+    }
+    std::string str() {
+        std::string s;
+        for (auto it = _expression.begin(); it != _expression.end(); it++) {
+            s.append((*it).name());
+        }
+        return s;
     }
 private:
     void delete_spaces(std::string* exp) {
@@ -151,6 +180,7 @@ private:
     }
 
     void parse(std::string exp) {
+        std::map<std::string, float> var;
         int curr_pos = 0;
         while (curr_pos < exp.size()) {
             if (is_number(exp[curr_pos])) {
@@ -297,5 +327,67 @@ private:
         if (!stack.isEmpty())
             throw std::logic_error("incorrect n");
     }
-    //void build_polish_record();
+    void build_polish_record(){
+        Tlist<Lexem> record;
+        TStack<Lexem> stack;
+        for (auto it = _expression.begin(); it!=_expression.end(); it++){
+            if ((*it).type() == INT_CONST || (*it).type() == FLOAT_CONST || (*it).type() == VARIABLE){
+                record.push_back((*it));
+            }
+            else{
+                if (stack.isEmpty()){
+                    stack.push((*it));
+                }
+                else if ((*it).type() == BRACKET && (*it).name() == ")") {
+                    while (stack.top().name()!="("){
+                        record.push_back(stack.top());
+                        stack.pop();
+
+                    }
+                    stack.pop();
+                }
+                else if(priority[(*it).name()]>priority[stack.top().name()]){
+                    stack.push((*it));
+                }
+                else if(priority[(*it).name()] == priority[stack.top().name()]){
+                    if (stack.top().type() != BRACKET){
+                        record.push_back(stack.top());
+                        stack.pop();
+                    }
+                    stack.push((*it));
+                }
+                else{
+                    if (stack.top().type() != BRACKET){ 
+                        while (!stack.isEmpty() && stack.top().name()!="(" && priority[stack.top().name()]>=priority[(*it).name()]){
+                            record.push_back(stack.top());
+                            stack.pop();
+                        }
+                    }
+                    stack.push((*it));
+                }
+            }
+        }
+        while (!stack.isEmpty()){
+            record.push_back(stack.top());
+            stack.pop();
+        }
+        _expression = record;
+    }
+    void set_vars_values(){
+        std::map<std::string, float> var;
+        for (auto it = _expression.begin(); it!=_expression.end(); it++){
+            if ((*it).type() == VARIABLE){
+                std::string str = (*it).name();
+                if (var.count(str) == 0){
+                    float value;
+                    std::cout << "enter a value " << str << ": "; std::cin >> value;
+                    std::cout << std::endl;
+                    (*it).set_value(value);
+                    var[str] = value; 
+                }
+                else
+                    (*it).set_value(var[str]);
+            }
+        }
+    }
 };

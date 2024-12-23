@@ -22,7 +22,7 @@ public:
 
     void pop();
 
-    int top();
+    T top();
 };
 
 template <class T>
@@ -60,6 +60,6 @@ void TStack<T>::pop() {
 }
 
 template <class T>
-int TStack<T>::top() {
+T TStack<T>::top() {
     return _data[_top];
 }

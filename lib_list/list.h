@@ -1,6 +1,6 @@
 #include "node.h"
 #include "iostream"
-#include "execution"
+#include "exception"
 #include <chrono>
 #pragma once
 
@@ -22,14 +22,15 @@ public:
     void insert(TNode<T>* node, T value);
     void insert(size_t pos, T value);
     TNode<T>* find(const T& value) const noexcept;
+    int find_quantity(const T& value) const noexcept;
     TNode<T>* find_pos(size_t pos) const;
     TNode<T>* find_pres(TNode<T>* node) const noexcept;
     void pop_front();
     void pop_back();
-    TIterator begin() {
+    TIterator begin() const{
         return TIterator(_head);
     }
-    TIterator end() {
+    TIterator end() const{
         return TIterator(nullptr);
     }
     void erase(TNode <T>* node);
@@ -39,6 +40,7 @@ public:
     void replace(size_t pos, T value) const;
     int get_size() const noexcept;
     void print() const noexcept;
+    void clear() noexcept;
     void qsort() noexcept;
     bool check_cycle_rabbit_turtle() noexcept;
     bool check_cycle_reverse_list() noexcept;
@@ -63,17 +65,19 @@ private:
         bool operator!=(const TIterator& iter) const noexcept {
             return _pcur != iter._pcur;
         }
+        bool operator!=(const TNode<T>& node) const noexcept {
+            return _pcur != node;
+        }
         bool operator==(const TIterator& iter) const noexcept {
             return _pcur == iter._pcur;
         }
-        const T& operator*() const{
-            if (_pcur == nullptr) throw std::logic_error("nullptr iterator");
-            return _pcur->value();
+        bool operator==(const T& value) const noexcept {
+            return _pcur->value() == value;
         }
-
+        const T& operator*() const{    if (_pcur == nullptr) throw std::logic_error("nullptr iterator");
+            return _pcur->value();}
         T& operator*() {
-            if (_pcur == nullptr) throw std::logic_error("nullptr iterator");
-            return _pcur->value();
+            if (_pcur == nullptr) throw std::logic_error("nullptr iterator"); return _pcur->value();
         }
     };
 };
@@ -175,6 +179,19 @@ TNode<T>* Tlist<T>::find(const T& value) const noexcept {
 }
 
 template <class T>
+int Tlist<T>::find_quantity(const T& value) const noexcept {
+    TNode<T>* cur = _head;
+    size_t total = 0;
+    while (cur != nullptr) {
+        if (cur->value() == value) {
+            total+=1;
+        }
+        cur = cur->next();
+    }
+    return total;
+}
+
+template <class T>
 TNode<T>* Tlist<T>::find_pos(size_t pos) const {
     size_t total = 0;
     TNode<T>* cur = _head;
@@ -203,11 +220,13 @@ void Tlist<T>::insert(size_t pos, T value) {
     }
     TNode<T>* cur = find_pos(pos);
     TNode<T>* node = new TNode<T>(value, cur);
-    if (cur == _head) {
+    if (cur == _head && cur == _tail){
+        _head = node;
+        _tail = cur;
+    }
+    else if (cur == _head) {
         _head = node;
     }
-    if (cur->next() == nullptr)
-        _tail = node;
     else {
         TNode<T>* pred = find_pres(cur);
         pred->next(node);
@@ -234,6 +253,7 @@ void Tlist<T>::pop_back() {
     }
     else {
         TNode<T>* new_tail = find_pres(_tail);
+        new_tail->next(nullptr);
         _tail = nullptr;
         _tail = new_tail;
     }
@@ -301,6 +321,13 @@ void Tlist<T>::print() const noexcept {
         cur = cur->next();
     }
     std::cout << cur->value() << std::endl;
+}
+
+template<class T>
+void Tlist<T>::clear() noexcept{
+    while (_head!=nullptr){
+        this->pop_front();
+    }
 }
 
 // template <class T>

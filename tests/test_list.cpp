@@ -186,7 +186,6 @@ TEST_F(TestListsLib, check_iterator) {
 	size_t total = 0;
 	for (Tlist<int>::iterator it = list.begin(); it != list.end(); it++) {
 		total++;
-		EXPECT_EQ(it, total);
 		EXPECT_EQ(*it, total);
 	}
 	EXPECT_EQ(total, 5);
