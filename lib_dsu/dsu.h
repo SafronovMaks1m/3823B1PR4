@@ -48,6 +48,14 @@ void DSU::uni(int first, int second) {
 	int top1 = find(first);
 	int top2 = find(second);
 	_parent[top2 - 1] = top1;
+	if (_rank[top1 - 1] == 0) {
+		_rank[top1 - 1] = _rank[top2 - 1] + 1;
+	}
+	else {
+		if (_rank[top1 - 1] <= _rank[top2 - 1]) {
+			_rank[top1 - 1] = _rank[top2 - 1] + 1;
+		}
+	}
 }
 
 void DSU::clear() {
