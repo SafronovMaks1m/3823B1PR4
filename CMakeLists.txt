@@ -22,6 +22,7 @@ add_subdirectory(lib_lstack)
 add_subdirectory(lib_matrix)
 add_subdirectory(lib_lexem)
 add_subdirectory(lib_polinom)
+add_subdirectory(lib_dsu)
 add_subdirectory(main)                # подключаем дополнительный CMakeLists.txt из подкаталога с именем main
 
 option(BTEST "build test?" ON)        # указываем подключаем ли google-тесты (ON или YES) или нет (OFF или NO)
