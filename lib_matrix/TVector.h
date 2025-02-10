@@ -1,4 +1,4 @@
-#include "../lib_DMassive/TDmassive.h"
+#include "TDmassive.h"
 #include "iostream"
 #include <math.h>
 #include "exception"

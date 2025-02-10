@@ -1,6 +1,6 @@
 #include <gtest.h>
 #include "../lib_matrix/matrix.h"
-#include "../lib_vector/TVector.h"
+#include "../lib_matrix/TVector.h"
 
 TEST(TestTMatrixLib, check_constructer_size) {
 	TUpperTriangularMatrix<int> s = TUpperTriangularMatrix<int>(3, 1);
