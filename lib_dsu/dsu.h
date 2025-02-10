@@ -3,19 +3,21 @@
 #include "../lib_dmassive/TDmassive.h"
 
 class DSU {
+public:
 	int _size;
 	TDMassive<int> _parent;
 	TDMassive<int> _rank;
-public:
 	DSU(int size = 0);
 	~DSU();
 	void make_set(int elem);
 	int find(int elem);
 	void uni(int first, int second);
 	void clear();
+	TDMassive<int>& parent();
+	TDMassive<int>& rank();
 };
 
-DSU::DSU(int size = 0) {
+DSU::DSU(int size) {
 	_size = size;
 	_parent = TDMassive<int>(_size);
 	for (size_t i = 0; i < _size; i++) {
@@ -63,3 +65,12 @@ void DSU::clear() {
 	_parent.clear();
 	_rank.clear();
 }
+
+TDMassive<int>& DSU::parent() {
+	return _parent;
+}
+
+TDMassive<int>& DSU::rank() {
+	return _rank;
+}
+//
