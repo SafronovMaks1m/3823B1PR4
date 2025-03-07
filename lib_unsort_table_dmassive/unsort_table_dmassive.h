@@ -1,7 +1,6 @@
 #include "..//lib_itable/itable.h"
 #include "..//lib_pair/TPair.h"
-#include "..//lib_list/list.h"
-#include "..//lib_list/node.h"
+#include "..//lib_dmassive/TDmassive.h"
 #include "string.h"
 #include "iostream"
 #include "exception"
@@ -18,14 +17,14 @@ void generate_key(Tkey& key, std::string val, size_t size) {
 
 
 template <class Tkey, class Tval>
-class Unsorted_Table : public ITable<Tkey, Tval> {
-    Tlist<TPair<Tkey, Tval>> _data;
+class Unsorted_Table_DMassive : public ITable<Tkey, Tval> {
+    TDMassive<TPair<Tkey, Tval>> _data;
     size_t _size;
 public:
-    Unsorted_Table();
-    Unsorted_Table(const Tlist<TPair<Tkey, Tval>>& list);
-    Unsorted_Table(const Unsorted_Table<Tkey, Tval>& table);
-    Unsorted_Table& operator = (const Unsorted_Table<Tkey, Tval>& table);
+    Unsorted_Table_DMassive();
+    Unsorted_Table_DMassive(const TDMassive<TPair<Tkey, Tval>>& massive);
+    Unsorted_Table_DMassive(const Unsorted_Table_DMassive<Tkey, Tval>& table);
+    Unsorted_Table_DMassive& operator = (const Unsorted_Table_DMassive<Tkey, Tval>& table);
     Tkey insert(Tval value);
     void insert(Tkey key, Tval value);
     void erase(Tkey key);
@@ -36,24 +35,24 @@ public:
 };
 
 template <class Tkey, class Tval>
-Unsorted_Table<Tkey, Tval>::Unsorted_Table() {
+Unsorted_Table_DMassive<Tkey, Tval>::Unsorted_Table_DMassive() {
     _size = 0;
 }
 
 template <class Tkey, class Tval>
-Unsorted_Table<Tkey, Tval>::Unsorted_Table(const Tlist<TPair<Tkey, Tval>>& list) {
-    _data = list;
-    _size = list.get_size();
+Unsorted_Table_DMassive<Tkey, Tval>::Unsorted_Table_DMassive(const TDMassive<TPair<Tkey, Tval>>& massive) {
+    _data = massive;
+    _size = massive.size();
 }
 
 template <class Tkey, class Tval>
-Unsorted_Table<Tkey, Tval>::Unsorted_Table(const Unsorted_Table<Tkey, Tval>& table) {
+Unsorted_Table_DMassive<Tkey, Tval>::Unsorted_Table_DMassive(const Unsorted_Table_DMassive<Tkey, Tval>& table) {
     _data = table._data;
     _size = table._size;
 }
 
 template <class Tkey, class Tval>
-Unsorted_Table<Tkey, Tval>& Unsorted_Table<Tkey, Tval>::operator=(const Unsorted_Table<Tkey, Tval>& table) {
+Unsorted_Table_DMassive<Tkey, Tval>& Unsorted_Table_DMassive<Tkey, Tval>::operator=(const Unsorted_Table_DMassive<Tkey, Tval>& table) {
     if (this != &table) {
         _data = table._data;
         _size = table._size;
@@ -62,7 +61,7 @@ Unsorted_Table<Tkey, Tval>& Unsorted_Table<Tkey, Tval>::operator=(const Unsorted
 }
 
 template <class Tkey, class Tval>
-Tkey Unsorted_Table<Tkey, Tval>::insert(Tval value) {
+Tkey Unsorted_Table_DMassive<Tkey, Tval>::insert(Tval value) {
     Tkey new_key;
     generate_key(new_key, value, _size);
     TPair<Tkey, Tval> new_row(new_key, value);
@@ -72,7 +71,7 @@ Tkey Unsorted_Table<Tkey, Tval>::insert(Tval value) {
 }
 
 template <class Tkey, class Tval>
-void Unsorted_Table<Tkey, Tval>::insert(Tkey key, Tval value) {
+void Unsorted_Table_DMassive<Tkey, Tval>::insert(Tkey key, Tval value) {
     if (search(key))
         throw std::logic_error("such a key is already in the table.");
     TPair<Tkey, Tval> new_row(key, value);
@@ -81,30 +80,29 @@ void Unsorted_Table<Tkey, Tval>::insert(Tkey key, Tval value) {
 }
 
 template <class Tkey, class Tval>
-void Unsorted_Table<Tkey, Tval>::erase(Tkey key) {
-    for (auto i = _data.begin(); i != _data.end(); i++) {
-        if ((*i).first() == key) {
-            _data.erase(i.pcur());
-            break;
+void Unsorted_Table_DMassive<Tkey, Tval>::erase(Tkey key) {
+    for (size_t i = 0; i < _size; i++) {
+        if (_data[i].first() == key) {
+            _data.remove_by_index(i);
         }
     }
     _size--;
 }
 
 template <class Tkey, class Tval>
-Tval Unsorted_Table<Tkey, Tval>::find(Tkey key) {
-    for (auto i = _data.begin(); i != _data.end(); i++) {
-        if ((*i).first() == key) {
-            return (*i).second();
+Tval Unsorted_Table_DMassive<Tkey, Tval>::find(Tkey key) {
+    for (size_t i = 0; i < _size; i++) {
+        if (_data[i].first() == key) {
+            return _data[i].second();
         }
     }
     throw std::logic_error("element not found");
 }
 
 template <class Tkey, class Tval>
-bool Unsorted_Table<Tkey, Tval>::search(Tkey key) {
-    for (auto i = _data.begin(); i != _data.end(); i++) {
-        if ((*i).first() == key) {
+bool Unsorted_Table_DMassive<Tkey, Tval>::search(Tkey key) {
+    for (size_t i = 0; i < _size; i++) {
+        if (_data[i].first() == key) {
             return true;
         }
     }
@@ -120,3 +118,6 @@ bool Unsorted_Table<Tkey, Tval>::search(Tkey key) {
 //Tval& Unsorted_Table<Tkey, Tval>::operator[](const Tkey key) {
 //    return this->find(key);
 //}
+
+
+

@@ -1,0 +1,2 @@
+create_project_lib(Sort_Table_Dmassive)
+add_depend(Sort_Table_Dmassive Itable lib_itable)

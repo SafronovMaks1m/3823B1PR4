@@ -23,6 +23,7 @@ public:
 
     inline T1 first() const noexcept;
     inline T2 second() const noexcept;
+
     inline void set_first(const T1& value) noexcept;
     inline void set_second(const T2& value) noexcept;
 
