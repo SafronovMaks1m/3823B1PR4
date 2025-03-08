@@ -3,7 +3,7 @@
 #include "..//lib_dmassive/TDmassive.h"
 #include "..//lib_unsort_table_dmassive/unsort_table_dmassive.h"
 
-TEST(TestUnsort_Table, check_func_fin) {
+TEST(TestUnsort_Table_DMassive, check_func_find) {
 	TDMassive<TPair<int, int>> massive;
 	for (size_t i = 0; i < 5; i++) {
 		massive.push_back(TPair<int, int>(i + 1, i));
@@ -46,25 +46,43 @@ TEST(TestUnsort_Table_DMassive, check_func_insert_throw) {
 	ASSERT_ANY_THROW(table.insert(3, 7));
 }
 
-//TEST(TestUnsort_Table_DMassive, check_func_erase) {
-//	TDMassive<TPair<int, int>> massive;
-//	for (size_t i = 0; i < 5; i++) {
-//		massive.push_back(TPair<int, int>(i + 1, i));
-//	}
-//	Unsorted_Table_DMassive<int, int> table(massive);
-//	ASSERT_EQ(table.find(3), 2);
-//	table.erase(3);
-//	ASSERT_ANY_THROW(table.find(3));
-//} ????????????????????
+TEST(TestUnsort_Table_DMassive, check_func_erase) {
+	TDMassive<TPair<int, int>> massive;
+	for (size_t i = 0; i < 5; i++) {
+		massive.push_back(TPair<int, int>(i + 1, i));
+	}
+	Unsorted_Table_DMassive<int, int> table(massive);
+	ASSERT_EQ(table.find(3), 2);
+	table.erase(3);
+	ASSERT_ANY_THROW(table.find(3));
+}
 
-//TEST(TestUnsort_Table, check_func_staples) {
-//	Tlist<TPair<int, int>> list;
-//	for (size_t i = 0; i < 5; i++) {
-//		list.push_back(TPair<int, int>(i + 1, i));
-//	}
-//	Unsorted_Table<int, int> table(list);
-//	ASSERT_EQ(table[1], 0);
-//	ASSERT_EQ(table[3], 2);
-//	table[3] = 7;
-//	ASSERT_EQ(table[3], 7);
-//}
+TEST(TestUnsort_Table_DMassive, check_func_staples) {
+	TDMassive<TPair<int, int>> massive;
+	for (size_t i = 0; i < 5; i++) {
+		massive.push_back(TPair<int, int>(i + 1, i));
+	}
+	Unsorted_Table_DMassive<int, int> table(massive);
+	ASSERT_EQ(table[1], 0);
+	ASSERT_EQ(table[3], 2);
+	table[3] = 7;
+	ASSERT_EQ(table[3], 7);
+}
+
+TEST(TestUnsort_Table_DMassive, check_initialize_str) {
+	TDMassive<TPair<std::string, std::string>> massive;
+	for (size_t i = 65; i < 98; i++) {
+		char s = char(i);
+		char s1 = char(i + 1);
+		std::string str_s(1, s);
+		std::string str_s1(1, i + 1);
+		TPair<std::string, std::string> t(str_s, str_s1);
+
+		massive.push_back(t);
+	}
+	Unsorted_Table_DMassive<std::string, std::string> table(massive);
+	ASSERT_EQ(table["A"], "B");
+	ASSERT_EQ(table["B"], "C");
+	table.insert("abc");
+	ASSERT_EQ(table["abc!"], "abc");
+}

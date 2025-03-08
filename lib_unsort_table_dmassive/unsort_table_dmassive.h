@@ -84,7 +84,10 @@ template <class Tkey, class Tval>
 void Unsorted_Table_DMassive<Tkey, Tval>::erase(Tkey key) {
     for (size_t i = 0; i < _size; i++) {
         if (_data[i].first() == key) {
+            if (_data.states()[i] == State::deleted || _data.states()[i] == State::empty)
+                break;
             _data.remove_by_index(i);
+            break;
         }
     }
     _size--;
@@ -94,6 +97,8 @@ template <class Tkey, class Tval>
 Tval& Unsorted_Table_DMassive<Tkey, Tval>::find(Tkey key) {
     for (size_t i = 0; i < _size; i++) {
         if (_data[i].first() == key) {
+            if (_data.states()[i] == State::deleted || _data.states()[i] == State::empty)
+                break;
             return _data[i].second();
         }
     }
@@ -103,7 +108,7 @@ Tval& Unsorted_Table_DMassive<Tkey, Tval>::find(Tkey key) {
 template <class Tkey, class Tval>
 const Tval& Unsorted_Table_DMassive<Tkey, Tval>::find(Tkey key) const{
     for (size_t i = 0; i < _size; i++) {
-        if (_data[i].first() == key) {
+        if (_data.states()[i] != State::deleted && _data.states()[i] != State::empty && _data[i].first() == key) {
             return _data[i].second();
         }
     }
