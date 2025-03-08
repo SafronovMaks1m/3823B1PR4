@@ -14,7 +14,7 @@ class TPair {
     T1 _first;
     T2 _second;
 public:
-    TPair() : _first(0), _second(0) { }
+    TPair() = default;
     TPair(const T1& first, const T2& second) : _first(first), _second(second) { }
     TPair(const TPair& pair) : _first(pair._first), _second(pair._second) { }
     ~TPair() { }
@@ -100,7 +100,7 @@ template <class T1, class T2>
 TPair<T1, T2> TPair<T1, T2>::operator+(const TPair<T1, T2>& pair) const noexcept {
     TPair<T1, T2> temp;
     temp._first = _first+pair._first;
-    temp._second += _second+pair._second;
+    temp._second = _second+pair._second;
     return temp;
 }
 
