@@ -22,7 +22,8 @@ public:
     TPair& make_pair(const T1& first, const T2& second) noexcept;
 
     inline T1 first() const noexcept;
-    inline T2 second() const noexcept;
+    inline const T2& second() const noexcept;
+    inline T2& second() noexcept;
 
     inline void set_first(const T1& value) noexcept;
     inline void set_second(const T2& value) noexcept;
@@ -60,7 +61,12 @@ inline T1 TPair<T1, T2>::first() const noexcept {
 }
 
 template <class T1, class T2>
-inline T2 TPair<T1, T2>::second() const noexcept {
+inline const T2& TPair<T1, T2>::second() const noexcept {
+    return _second;
+}
+
+template <class T1, class T2>
+inline T2& TPair<T1, T2>::second() noexcept {
     return _second;
 }
 

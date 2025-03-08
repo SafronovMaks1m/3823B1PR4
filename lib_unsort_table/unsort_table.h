@@ -29,10 +29,11 @@ public:
     Tkey insert(Tval value);
     void insert(Tkey key, Tval value);
     void erase(Tkey key);
-    Tval find(Tkey key);
+    Tval& find(Tkey key);
+    const Tval& find(Tkey key) const;
     bool search(Tkey key);
-    /*const Tval& operator[](const Tkey key) const;
-    Tval& operator[](const Tkey key);*/
+    const Tval& operator[](const Tkey key) const;
+    Tval& operator[](const Tkey key);
 };
 
 template <class Tkey, class Tval>
@@ -92,7 +93,17 @@ void Unsorted_Table<Tkey, Tval>::erase(Tkey key) {
 }
 
 template <class Tkey, class Tval>
-Tval Unsorted_Table<Tkey, Tval>::find(Tkey key) {
+Tval& Unsorted_Table<Tkey, Tval>::find(Tkey key) {
+    for (auto i = _data.begin(); i != _data.end(); i++) {
+        if ((*i).first() == key) {
+            return (*i).second();
+        }
+    }
+    throw std::logic_error("element not found");
+}
+
+template <class Tkey, class Tval>
+const Tval& Unsorted_Table<Tkey, Tval>::find(Tkey key) const{
     for (auto i = _data.begin(); i != _data.end(); i++) {
         if ((*i).first() == key) {
             return (*i).second();
@@ -111,12 +122,12 @@ bool Unsorted_Table<Tkey, Tval>::search(Tkey key) {
     return false;
 }
 
-//template<class Tkey, class Tval>
-//const Tval& Unsorted_Table<Tkey, Tval>::operator[](const Tkey key) const {
-//    return this->find(key);
-//}
-//
-//template<class Tkey, class Tval>
-//Tval& Unsorted_Table<Tkey, Tval>::operator[](const Tkey key) {
-//    return this->find(key);
-//}
+template<class Tkey, class Tval>
+const Tval& Unsorted_Table<Tkey, Tval>::operator[](const Tkey key) const {
+    return this->find(key);
+}
+
+template<class Tkey, class Tval>
+Tval& Unsorted_Table<Tkey, Tval>::operator[](const Tkey key) {
+    return this->find(key);
+}
