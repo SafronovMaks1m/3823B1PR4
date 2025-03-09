@@ -364,6 +364,7 @@ TDMassive<T>& TDMassive<T>::insert(T value, size_t pos) {
     }
     for (size_t i = _size; i > pos; i--) {
         _data[i] = _data[i - 1];
+        _states[i] = _states[i-1];
     }
     _data[pos] = value;
     _states[pos] = State::busy;
