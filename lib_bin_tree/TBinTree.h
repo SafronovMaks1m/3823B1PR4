@@ -4,16 +4,17 @@
 
 template <class T>
 class BSearchTree {
-	BTreeNode* _head;
+	BTreeNode<T>* _head;
 	public:
 		BSearchTree();
 		BTreeNode<T>* insert(T val);
-		BTreeNode<T>* search(T& val) const noexcept;
+		BTreeNode<T>* search(T val) const noexcept;
 		BTreeNode<T>* search_prev(T& val) const noexcept;
 		BTreeNode<T>* min(BTreeNode<T>* node);
 		void erase(T val) noexcept;
 		~BSearchTree();
 		void clear(BTreeNode<T>* node) noexcept;
+		BTreeNode<T>* head();
 };
 
 template<class T>
@@ -23,7 +24,7 @@ BSearchTree<T>::BSearchTree() {
 
 template<class T>
 BTreeNode<T>* BSearchTree<T>::insert(T val) {
-	BTreeNode<T>* node(val);
+	BTreeNode<T>* node = new BTreeNode<T>(val);
 	if (_head == nullptr)
 		_head = node;
 	else {
@@ -54,7 +55,7 @@ BTreeNode<T>* BSearchTree<T>::insert(T val) {
 }
 
 template <class T>
-BTreeNode<T>* BSearchTree<T>::search(T& val) const noexcept {
+BTreeNode<T>* BSearchTree<T>::search(T val) const noexcept {
 	BTreeNode<T>* cur = _head;
 	while (cur != nullptr) {
 		if (val > cur->value())
@@ -104,15 +105,7 @@ void BSearchTree<T>::erase(T val) noexcept {
 			prev->right(nullptr);
 		delete del;
 	}
-	else if (del->left() != nullptr || del->right() != nullptr) {
-		BTreeNode<T>* child = del->left() != nullptr ? del->left() : del->right();
-		if (prev->left() == del)
-			prev->left(child);
-		else
-			prev->right(child);
-		delete del;
-	}
-	else {
+	else if (del->left() != nullptr && del->right() != nullptr) {
 		BTreeNode<T>* rep = this->min(del);
 		if (rep != del->right())
 			rep->right(del->right());
@@ -121,6 +114,14 @@ void BSearchTree<T>::erase(T val) noexcept {
 			prev->left(rep);
 		else
 			prev->right(rep);
+		delete del;
+	}
+	else {
+		BTreeNode<T>* child = del->left() != nullptr ? del->left() : del->right();
+		if (prev->left() == del)
+			prev->left(child);
+		else
+			prev->right(child);
 		delete del;
 	}
 }
@@ -132,10 +133,15 @@ BSearchTree<T>::~BSearchTree() {
 
 template <class T>
 void BSearchTree<T>::clear(BTreeNode<T>* node) noexcept {
-	if (_head != nullptr) {
+	if (node != nullptr) {
 		clear(node->left());
 		clear(node->right());
 
 		delete node;
 	}
+}
+
+template <class T>
+BTreeNode<T>* BSearchTree<T>::head() {
+	return _head;
 }

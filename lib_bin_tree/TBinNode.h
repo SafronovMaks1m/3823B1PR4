@@ -1,7 +1,10 @@
+#pragma once
+
 template <class T>
 class BTreeNode {
 	T _value;
-	BTreeNode<T>* _left, _right;
+	BTreeNode<T>* _left;
+	BTreeNode<T>* _right;
 	public:
 		BTreeNode(T value, BTreeNode<T>* left = nullptr, BTreeNode<T>* right = nullptr);
 		const T& value() const noexcept;
@@ -12,7 +15,7 @@ class BTreeNode {
 };
 
 template<class T>
-BTreeNode<T>::BTreeNode(T value, BTreeNode<T>* left = nullptr, BTreeNode<T>* right = nullptr) {
+BTreeNode<T>::BTreeNode(T value, BTreeNode<T>* left, BTreeNode<T>* right) {
 	_value = value; _left = left; _right = right;
 }
 
