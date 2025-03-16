@@ -2,6 +2,7 @@
 #include "..//lib_bin_tree/TBinNode.h"
 #include "..//lib_bin_tree/TBinTree.h"
 #include "..//lib_pair/TPair.h"
+#include "..//lib_dict/TDict.h"
 
 TEST(TestTBinTree, check_func_insert) {
 	BSearchTree<int> tree;

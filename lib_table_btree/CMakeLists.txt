@@ -1,0 +1,2 @@
+create_project_lib(TBSTTable)
+add_depend(TBSTTable Itable lib_itable)

@@ -27,7 +27,9 @@ add_subdirectory(lib_itable)
 add_subdirectory(lib_unsort_table)
 add_subdirectory(lib_unsort_table_dmassive)
 add_subdirectory(lib_sort_table_dmassive)
+add_subdirectory(lib_dict)
 add_subdirectory(lib_bin_tree)
+add_subdirectory(lib_table_btree)
 add_subdirectory(main)                # подключаем дополнительный CMakeLists.txt из подкаталога с именем main
 
 option(BTEST "build test?" ON)        # указываем подключаем ли google-тесты (ON или YES) или нет (OFF или NO)

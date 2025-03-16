@@ -1,12 +1,17 @@
 #include "exception"
 #include "iostream"
 #include "..//lib_bin_tree/TBinNode.h"
+#pragma once
 
 template <class T>
 class BSearchTree {
 	BTreeNode<T>* _head;
+	size_t _size;
 	public:
 		BSearchTree();
+		BTreeNode<T>* copy(BTreeNode<T>* node) noexcept;
+		BSearchTree(const BSearchTree<T>& tree);
+		BSearchTree<T>& operator=(const BSearchTree<T>& tree);
 		BTreeNode<T>* insert(T val);
 		BTreeNode<T>* search(T val) const noexcept;
 		BTreeNode<T>* search_prev(T& val) const noexcept;
@@ -15,11 +20,38 @@ class BSearchTree {
 		~BSearchTree();
 		void clear(BTreeNode<T>* node) noexcept;
 		BTreeNode<T>* head();
+		size_t size() const noexcept;
 };
 
 template<class T>
 BSearchTree<T>::BSearchTree() {
 	_head = nullptr;
+	_size = 0;
+}
+
+template<class T>
+BTreeNode<T>* BSearchTree<T>::copy(BTreeNode<T>* node) noexcept {
+	if (node == nullptr)
+		return nullptr;
+	BTreeNode<T>* new_node = new BTreeNode<T>(node->value());
+	new_node->left(copy(node->left()));
+	new_node->right(copy(node->right()));
+	return new_node;
+}
+
+template<class T>
+BSearchTree<T>::BSearchTree(const BSearchTree<T>& tree) {
+	_head = copy(tree._head);
+	_size = tree._size;
+}
+
+template<class T>
+BSearchTree<T>& BSearchTree<T>::operator=(const BSearchTree<T>& tree) {
+	if (&tree != this) {
+		_head = copy(tree._head);
+		_size = tree._size;
+	}
+	return *this;
 }
 
 template<class T>
@@ -51,6 +83,7 @@ BTreeNode<T>* BSearchTree<T>::insert(T val) {
 			}
 		}
 	}
+	_size++;
 	return node;
 }
 
@@ -124,6 +157,7 @@ void BSearchTree<T>::erase(T val) noexcept {
 			prev->right(child);
 		delete del;
 	}
+	_size--;
 }
 
 template <class T>
@@ -136,7 +170,6 @@ void BSearchTree<T>::clear(BTreeNode<T>* node) noexcept {
 	if (node != nullptr) {
 		clear(node->left());
 		clear(node->right());
-
 		delete node;
 	}
 }
@@ -144,4 +177,9 @@ void BSearchTree<T>::clear(BTreeNode<T>* node) noexcept {
 template <class T>
 BTreeNode<T>* BSearchTree<T>::head() {
 	return _head;
+}
+
+template <class T>
+size_t BSearchTree<T>::size() const noexcept {
+	return _size;
 }
