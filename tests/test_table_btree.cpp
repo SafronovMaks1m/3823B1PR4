@@ -5,6 +5,23 @@
 #include "..//lib_bin_tree/TBinTree.h"
 #include "..//lib_table_btree/TBSTTable.h"
 
+TEST(Test_TBSTTable, check_test_tree) {
+	TBSTTable<int, int> table;
+	table.insert(5, 5);
+	table.insert(3, 3);
+	table.insert(2, 2);
+	table.insert(4, 4);
+	table.insert(6, 6);
+	table.insert(7, 7);
+	TBSTTable<int, int> tae(table);
+	ASSERT_EQ(table.data().head()->value(), 5);
+	ASSERT_EQ(table.data().head()->left()->value(), 3);
+	ASSERT_EQ(table.data().head()->left()->left()->value(), 2);
+	ASSERT_EQ(table.data().head()->left()->right()->value(), 4);
+	ASSERT_EQ(table.data().head()->right()->value(), 6);
+	ASSERT_EQ(table.data().head()->right()->right()->value(), 7);
+}
+
 TEST(Test_TBSTTable, check_func_find) {
 	BSearchTree<TDict<int, int>> tree;
 	for (size_t i = 0; i < 5; i++) {
@@ -87,20 +104,4 @@ TEST(Test_TBSTTable, check_initialize_str) {
 	ASSERT_EQ(table["B"], "C");  
 	table.insert("abc");
 	ASSERT_EQ(table["abc!"], "abc");
-}
-
-TEST(Test_TBSTTable, check_test_tree) {
-	TBSTTable<int, int> table;
-	table.insert(5,5);
-	table.insert(3,3);
-	table.insert(2,2);
-	table.insert(4,4);
-	table.insert(6,6);
-	table.insert(7,7);
-	ASSERT_EQ(table.data().head()->value(), 5);
-	ASSERT_EQ(table.data().head()->left()->value(), 3);
-	ASSERT_EQ(table.data().head()->left()->left()->value(), 2);
-	ASSERT_EQ(table.data().head()->left()->right()->value(), 4);
-	ASSERT_EQ(table.data().head()->right()->value(), 6);
-	ASSERT_EQ(table.data().head()->right()->right()->value(), 7);
 }

@@ -15,6 +15,8 @@
 #include "../lib_lexem/lexem.h"
 #include "../lib_polinom/polinom.h"
 #include "../lib_polinom/monom.h"
+#include "../lib_bin_tree/TBinTree.h"
+#include "../lib_tree_output/TreeOut.h"
 #include "string.h"
 #include <chrono>
 
@@ -229,7 +231,33 @@ void Check_value_point() {
     polinom.valuePoint(); std::cout << 3.15 * pow(2, 2) * 3 * pow(2, 3) + 2 * 3 * 2 + 6 * pow(3, 2) * pow(2, 5);
 }
 
+void Tree_Output1() {
+    BSearchTree<int> tree;
+    tree.insert(2);
+    tree.insert(1);
+    tree.insert(6);
+    tree.insert(0);
+    tree.insert(4);
+    tree.insert(8);
+    tree.insert(3);
+    tree.insert(5);
+    tree.insert(7);
+    tree.insert(9);
+    tree.tree_out(tree.head());
+}
+
+void Tree_Output2() {
+    BSearchTree<int> tree;
+    tree.insert(5);
+    tree.insert(3);
+    tree.insert(6);
+    tree.insert(2);
+    tree.insert(4);
+    tree.insert(7);
+    tree.tree_out(tree.head());
+}
+
 int main() {
-    Check_calculate_polinom();
+    Tree_Output1();
 }
 #endif  // EASY_EXAMPLE

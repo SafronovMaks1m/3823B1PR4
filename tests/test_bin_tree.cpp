@@ -137,3 +137,26 @@ TEST(TestTBinTree, check_func_erase5) {
 	ASSERT_EQ(tree.head()->left()->right()->left()->value(), 5);
 	ASSERT_EQ(tree.head()->left()->right()->right()->value(), 7);
 }
+
+TEST(TestTBinTree, check_func_erdfgdfg) {
+	BSearchTree<int> tree;
+	tree.insert(2);
+	tree.insert(1);
+	tree.insert(6);
+	tree.insert(0);
+	tree.insert(4);
+	tree.insert(8);
+	tree.insert(3);
+	tree.insert(5);
+	tree.insert(7);
+	tree.insert(9);
+	ASSERT_EQ(tree.head()->left()->value(), 1);
+	ASSERT_EQ(tree.head()->left()->left()->value(), 0);
+	ASSERT_EQ(tree.head()->right()->value(), 6);
+	ASSERT_EQ(tree.head()->right()->right()->value(), 8);
+	ASSERT_EQ(tree.head()->right()->left()->value(), 4);
+	ASSERT_EQ(tree.head()->right()->left()->left()->value(), 3);
+	ASSERT_EQ(tree.head()->right()->left()->right()->value(), 5);
+	ASSERT_EQ(tree.head()->right()->right()->right()->value(), 9);
+	ASSERT_EQ(tree.head()->right()->right()->left()->value(), 7);
+}

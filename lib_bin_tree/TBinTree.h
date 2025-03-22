@@ -1,5 +1,6 @@
-#include "exception"
+﻿#include "exception"
 #include "iostream"
+#include "string"
 #include "..//lib_bin_tree/TBinNode.h"
 #pragma once
 
@@ -21,6 +22,8 @@ class BSearchTree {
 		void clear(BTreeNode<T>* node) noexcept;
 		BTreeNode<T>* head();
 		size_t size() const noexcept;
+		void tree_out(BTreeNode<T>* node, bool flag = false) noexcept;
+		void cursor_move(int y, int x);
 };
 
 template<class T>
@@ -182,4 +185,84 @@ BTreeNode<T>* BSearchTree<T>::head() {
 template <class T>
 size_t BSearchTree<T>::size() const noexcept {
 	return _size;
+}
+
+template <class T>
+void BSearchTree<T>::cursor_move(int y, int x) {
+	std::cout << "\033[" << y << ";" << x << "H";
+}
+
+static int max_dept = 0;
+static int count = 0;
+template<class T>
+void Depth(BTreeNode<T>* node) {
+	if (node == nullptr) return; 
+	count += 1;
+	Depth(node->left());
+	Depth(node->right());
+	max_dept = count > max_dept ? count : max_dept;
+	count -= 1;
+}
+
+static int width = 100;
+static int depth = 1;
+static int total;
+static int width_sub;
+static int total_sub;
+
+template<class T>
+void BSearchTree<T>::tree_out(BTreeNode<T>* node, bool flag) noexcept {
+	if (node == nullptr) return;
+	if (node->value() != _head->value() && width == 100) {
+		depth += 3;
+		if (flag == false)
+			width -= width_sub;
+		else
+			width += (total+1+total/2);
+		total/=2;
+	}
+	else if (node->value() != _head->value()){
+		depth += 3;
+		if (flag == false) {
+			total -= total_sub;
+			width_sub -= total_sub; width -= width_sub;
+		}
+		else {
+			total -= total_sub;
+			width += width_sub+total_sub; width_sub -= total_sub;
+		}
+	}
+	else {
+		Depth(node);
+		total_sub = max_dept;
+		total = max_dept * (max_dept-2) * 2;
+		width_sub = (total / 2) + 1;
+	}
+	cursor_move(depth, width + total + 1); std::cout << node->value();
+	if (node->left() != nullptr || node->right() != nullptr) {
+		if (node->left() != nullptr) {
+			cursor_move(depth, width);
+			std::cout << "." << std::string(total, '-');
+			cursor_move(depth + 1, width); std::cout << "|"; cursor_move(depth + 2, width); std::cout << "|";
+		}
+		if (node->right() != nullptr) {
+			cursor_move(depth, width + total + 2);
+			std::cout << std::string(total, '-') << ".";
+			cursor_move(depth + 1, width + total * 2 + 2);  std::cout << "|"; cursor_move(depth + 2, width + total * 2 + 2); std::cout << "|";
+		}
+	}
+	tree_out(node->left(), false);
+	tree_out(node->right(), true);
+	depth -= 3;
+	if (flag == false) {
+		if (_head->left()->value() == node->value()) {
+			total*=2; width += width_sub;
+		}
+		else{
+			width += width_sub; total += total_sub; width_sub += total_sub;
+		}
+	}
+	else{
+		total += total_sub; width_sub += total_sub; width -= width_sub + total_sub;
+	}
 }
