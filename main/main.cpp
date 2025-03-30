@@ -235,14 +235,14 @@ void Tree_Output1() {
     BSearchTree<int> tree;
     tree.insert(2);
     tree.insert(1);
-    tree.insert(6);
+    tree.insert(121);
+    tree.insert(123);
+    tree.insert(125111);
+    tree.insert(1000001);
     tree.insert(0);
     tree.insert(4);
-    tree.insert(8);
+    tree.insert(18);
     tree.insert(3);
-    tree.insert(5);
-    tree.insert(7);
-    tree.insert(9);
     tree.tree_out(tree.head());
 }
 

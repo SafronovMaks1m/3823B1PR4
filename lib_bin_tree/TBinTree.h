@@ -2,6 +2,7 @@
 #include "iostream"
 #include "string"
 #include "..//lib_bin_tree/TBinNode.h"
+#include "..//lib_bin_tree/TBinNode.cpp"
 #pragma once
 
 template <class T>
@@ -24,6 +25,9 @@ class BSearchTree {
 		size_t size() const noexcept;
 		void tree_out(BTreeNode<T>* node, bool flag = false) noexcept;
 		void cursor_move(int y, int x);
+		void print_branch(BTreeNode<T>* node);
+		void calculating_coordinates(BTreeNode<T>* node, bool flag);
+		void coordinates_after_branch_formed(BTreeNode<T>* node, bool flag);
 };
 
 template<class T>
@@ -140,25 +144,38 @@ void BSearchTree<T>::erase(T val) noexcept {
 		else
 			prev->right(nullptr);
 		delete del;
+		if (del == _head) {
+			_head = nullptr;
+		}
 	}
 	else if (del->left() != nullptr && del->right() != nullptr) {
 		BTreeNode<T>* rep = this->min(del);
 		if (rep != del->right())
 			rep->right(del->right());
 		rep->left(del->left());
-		if (prev->left() == del)
-			prev->left(rep);
-		else
-			prev->right(rep);
+		if (del != _head) {
+			if (prev->left() == del)
+				prev->left(rep);
+			else
+				prev->right(rep);
+		}
 		delete del;
+		if (del == _head) {
+			_head = rep;
+		}
 	}
 	else {
 		BTreeNode<T>* child = del->left() != nullptr ? del->left() : del->right();
-		if (prev->left() == del)
-			prev->left(child);
-		else
-			prev->right(child);
+		if (del != _head) {
+			if (prev->left() == del)
+				prev->left(child);
+			else
+				prev->right(child);
+		}
 		delete del;
+		if (del == _head) {
+			_head = child;
+		}
 	}
 	_size--;
 }
@@ -192,36 +209,17 @@ void BSearchTree<T>::cursor_move(int y, int x) {
 	std::cout << "\033[" << y << ";" << x << "H";
 }
 
-static int max_dept = 0;
-static int count = 0;
 template<class T>
-void Depth(BTreeNode<T>* node) {
-	if (node == nullptr) return; 
-	count += 1;
-	Depth(node->left());
-	Depth(node->right());
-	max_dept = count > max_dept ? count : max_dept;
-	count -= 1;
-}
-
-static int width = 100;
-static int depth = 1;
-static int total;
-static int width_sub;
-static int total_sub;
-
-template<class T>
-void BSearchTree<T>::tree_out(BTreeNode<T>* node, bool flag) noexcept {
-	if (node == nullptr) return;
+void BSearchTree<T>::calculating_coordinates(BTreeNode<T>* node, bool flag) {
 	if (node->value() != _head->value() && width == 100) {
 		depth += 3;
 		if (flag == false)
 			width -= width_sub;
 		else
-			width += (total+1+total/2);
-		total/=2;
+			width += (total + 1 + total / 2);
+		total /= 2;
 	}
-	else if (node->value() != _head->value()){
+	else if (node->value() != _head->value()) {
 		depth += 3;
 		if (flag == false) {
 			total -= total_sub;
@@ -229,15 +227,31 @@ void BSearchTree<T>::tree_out(BTreeNode<T>* node, bool flag) noexcept {
 		}
 		else {
 			total -= total_sub;
-			width += width_sub+total_sub; width_sub -= total_sub;
+			width += width_sub + total_sub; width_sub -= total_sub;
 		}
 	}
 	else {
 		Depth(node);
 		total_sub = max_dept;
-		total = max_dept * (max_dept-2) * 2;
+		total = max_dept * (max_dept - 2) * 2;
 		width_sub = (total / 2) + 1;
 	}
+}
+
+static int max_dept = 0;
+static int count = 0;
+template<class T>
+void Depth(BTreeNode<T>* node) {
+	if (node == nullptr) return;
+	count += 1;
+	Depth(node->left());
+	Depth(node->right());
+	max_dept = count > max_dept ? count : max_dept;
+	count -= 1;
+}
+
+template <class T>
+void BSearchTree<T>::print_branch(BTreeNode<T>* node) {
 	cursor_move(depth, width + total + 1); std::cout << node->value();
 	if (node->left() != nullptr || node->right() != nullptr) {
 		if (node->left() != nullptr) {
@@ -246,23 +260,41 @@ void BSearchTree<T>::tree_out(BTreeNode<T>* node, bool flag) noexcept {
 			cursor_move(depth + 1, width); std::cout << "|"; cursor_move(depth + 2, width); std::cout << "|";
 		}
 		if (node->right() != nullptr) {
-			cursor_move(depth, width + total + 2);
+			int size_value = std::to_string(node->value()).size();
+			cursor_move(depth, width + total + 1 + size_value);
 			std::cout << std::string(total, '-') << ".";
-			cursor_move(depth + 1, width + total * 2 + 2);  std::cout << "|"; cursor_move(depth + 2, width + total * 2 + 2); std::cout << "|";
+			cursor_move(depth + 1, width + total * 2 + 1 + size_value);  std::cout << "|"; cursor_move(depth + 2, width + total * 2 + 1 + size_value); std::cout << "|";
 		}
 	}
-	tree_out(node->left(), false);
-	tree_out(node->right(), true);
+}
+
+template <class T>
+void BSearchTree<T>::coordinates_after_branch_formed(BTreeNode<T>* node, bool flag) {
 	depth -= 3;
 	if (flag == false) {
 		if (_head->left()->value() == node->value()) {
-			total*=2; width += width_sub;
+			total *= 2; width += width_sub;
 		}
-		else{
+		else {
 			width += width_sub; total += total_sub; width_sub += total_sub;
 		}
 	}
-	else{
+	else {
 		total += total_sub; width_sub += total_sub; width -= width_sub + total_sub;
 	}
+}
+
+static int width = 100;
+static int depth = 1;
+static int total;
+static int width_sub;
+static int total_sub;
+template<class T>
+void BSearchTree<T>::tree_out(BTreeNode<T>* node, bool flag) noexcept {
+	if (node == nullptr) return;
+	calculating_coordinates(node, flag);
+	print_branch(node);
+	tree_out(node->left(), false);
+	tree_out(node->right(), true);
+	coordinates_after_branch_formed(node, flag);
 }
