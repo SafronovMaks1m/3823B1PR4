@@ -19,6 +19,7 @@ public:
     TDMassive(const T* arr, const size_t n);
     TDMassive(size_t n, T value);
     TDMassive(size_t n);
+    TDMassive(size_t n, bool flag);
     TDMassive(const TDMassive& archive, size_t pos, size_t n);
     TDMassive<T>& operator = (const TDMassive <T>& mas);
 
@@ -151,6 +152,21 @@ TDMassive<T>::TDMassive(size_t n) {
     _deleted = 0;
     _data = new T[_capacity];
     _states = new State[_capacity];
+    for (size_t i = 0; i < _capacity; i++) {
+        _states[i] = State::empty;
+    }
+}
+
+template <typename T>
+TDMassive<T>::TDMassive(size_t n, bool flag) {
+    _size = n;
+    _capacity = (n / 15 + 1) * 15;
+    _deleted = 0;
+    _data = new T[_capacity];
+    _states = new State[_capacity];
+    for (size_t i = 0; i < _capacity; i++) {
+        _states[i] = State::empty;
+    }
 }
 
 template <typename T>

@@ -1,11 +1,12 @@
 #include "iostream"
 #include "algorithm"
 #include "string"
-#include "monom.h"
 #include "exception"
 #include "../lib_list/list.h"
 #include "../lib_list/node.h"
+#include "../lib_monom/monom.h"
 #include "../lib_dmassive/TDmassive.h"
+#pragma once
 
 class CPolinom {
 public:
@@ -13,65 +14,65 @@ public:
     char* _names;
     Tlist<CMonom> _monoms;
 
-    CPolinom(std::string str, size_t size = 3);
+    inline CPolinom(std::string str, size_t size = 3);
 
-    CPolinom(const char* mas, size_t size = 3);
+    inline CPolinom(const char* mas, size_t size = 3);
 
-    CPolinom(size_t size);
+    inline CPolinom(size_t size);
 
-    CPolinom();
+    inline CPolinom();
 
-    CPolinom& operator=(const CPolinom& obj);
+    inline CPolinom& operator=(const CPolinom& obj);
 
-    CPolinom(const CPolinom& obj);
+    inline CPolinom(const CPolinom& obj);
 
-    void fillVar();
+    inline void fillVar();
 
-    ~CPolinom();
+    inline ~CPolinom();
 
-    void parse(std::string str);
+    inline void parse(std::string str);
 
-    void appendPolinom(const CMonom& obj);
+    inline void appendPolinom(const CMonom& obj);
 
-    void calculate();
+    inline void calculate();
 
-    void valuePoint();
+    inline void valuePoint();
 
-    CPolinom operator+(const CMonom& obj) const;
+    inline CPolinom operator+(const CMonom& obj) const;
 
-    CPolinom& operator+=(const CMonom& obj);
+    inline CPolinom& operator+=(const CMonom& obj);
 
-    CPolinom operator-(const CMonom& obj) const;
+    inline CPolinom operator-(const CMonom& obj) const;
 
-    CPolinom& operator-=(const CMonom& obj);
+    inline CPolinom& operator-=(const CMonom& obj);
 
-    CPolinom operator*(const CMonom& obj) const;
+    inline CPolinom operator*(const CMonom& obj) const;
 
-    CPolinom& operator*=(const CMonom& obj);
+    inline CPolinom& operator*=(const CMonom& obj);
 
-    CPolinom operator/(const CMonom& obj) const;
+    inline CPolinom operator/(const CMonom& obj) const;
 
-    CPolinom& operator/=(const CMonom& obj);
+    inline CPolinom& operator/=(const CMonom& obj);
 
-    CPolinom operator+(const CPolinom& obj) const;
+    inline CPolinom operator+(const CPolinom& obj) const;
 
-    CPolinom& operator+=(const CPolinom& obj);
+    inline CPolinom& operator+=(const CPolinom& obj);
 
-    CPolinom operator-(const CPolinom& obj) const;
+    inline CPolinom operator-(const CPolinom& obj) const;
 
-    CPolinom& operator-=(const CPolinom& obj);
+    inline CPolinom& operator-=(const CPolinom& obj);
 
-    CPolinom operator*(const CPolinom& obj) const;
+    inline CPolinom operator*(const CPolinom& obj) const;
 
-    CPolinom operator/(const CPolinom& obj) const;
+    inline CPolinom operator/(const CPolinom& obj) const;
 
-    bool operator==(const CPolinom& obj) const;
+    inline bool operator==(const CPolinom& obj) const;
 
-    bool operator!=(const CPolinom& obj) const;
+    inline bool operator!=(const CPolinom& obj) const;
 
-    bool isVariable(const CMonom& obj) const;
+    inline bool isVariable(const CMonom& obj) const;
 
-    friend std::istream& operator >> (std::istream& in, CPolinom& polinom) {
+    inline friend std::istream& operator >> (std::istream& in, CPolinom& polinom) {
         size_t size;
         std::string str;
         std::cout << "Enter the number of variables of the polynomial: "; std::cin >> size;
@@ -87,11 +88,11 @@ public:
         return in;
     }
 
-    void calculator(const CPolinom& polinom) const;
+    inline void calculator(const CPolinom& polinom) const;
 
-    void calculator(const CMonom& monom) const;
+    inline void calculator(const CMonom& monom) const;
 
-    friend std::ostream& operator<<(std::ostream& out, const CPolinom& polinom) {
+    inline friend std::ostream& operator<<(std::ostream& out, const CPolinom& polinom) {
         auto next = polinom._monoms.begin(); 
         if (polinom._monoms.get_size() == 0) {
             std::cout << 0 << std::endl;

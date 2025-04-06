@@ -5,10 +5,6 @@
 #include <string>
 #include <stdexcept>
 
-template <class T1, class T2> class TPair;
-template <class T1, class T2>
-std::ostream& operator<<(std::ostream& out, const TPair<T1, T2>& obj);
-
 template <class T1, class T2>
 class TPair {
     T1 _first;
@@ -45,7 +41,10 @@ public:
 
     std::string to_string() const noexcept;
 
-    friend std::ostream& operator<< (std::ostream& out, const TPair<T1, T2>& pair) noexcept;
+    friend std::ostream& operator<< (std::ostream& out, const TPair<T1, T2>& pair) noexcept {
+        out << pair.to_string();
+        return out;
+    }
 };
 
 template <class T1, class T2>
@@ -164,14 +163,13 @@ TPair<T1, T2> TPair<T1, T2>::operator-(const TPair<T1, T2>& pair) const noexcept
 
 template <class T1, class T2>
 std::string TPair<T1, T2>::to_string() const noexcept {
-    std::string str = "(" + std::to_string(_first) + ", " + std::to_string(_second) + ")";
+    std::string str = "(";
+    if (typeid(_first) == typeid(std::string))
+        str += _first;
+    else
+        str += std::to_string(_first);
+    str += ", " + std::to_string(_second) + ")";
     return str;
-}
-
-template <class T1, class T2>
-std::ostream& operator<<(std::ostream& out, const TPair<T1, T2>& pair) {
-    out << pair.to_string();
-    return out;
 }
 
 #endif  // LIB_PAIR_PAIR_H_

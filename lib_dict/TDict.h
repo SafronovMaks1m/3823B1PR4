@@ -3,6 +3,7 @@
 #include <stdexcept>
 #pragma once
 
+
 template <class T1, class T2>
 class TDict {
 	T1 _key;
@@ -39,6 +40,13 @@ class TDict {
 
 		inline void set_key(const T1& key) noexcept;
 		inline void set_value(const T2& value) noexcept;
+
+		std::string to_string() const noexcept;
+
+		friend std::ostream& operator<< (std::ostream& out, const TDict<T1, T2>& pair) noexcept {
+			out << pair.to_string();
+			return out;
+		}
 };
 
 template <class T1, class T2>
@@ -157,4 +165,10 @@ void TDict<T1, T2>::set_key(const T1& key) noexcept {
 template <class T1, class T2>
 void TDict<T1, T2>::set_value(const T2& value) noexcept {
 	return _value = value;
+}
+
+template <class T1, class T2>
+std::string TDict<T1, T2>::to_string() const noexcept {
+	std::string str = "(" + std::to_string(_key) + ", " + std::to_string(_value) + ")";
+	return str;
 }

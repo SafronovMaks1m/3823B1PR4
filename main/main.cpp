@@ -14,9 +14,11 @@
 #include "../lib_list/node.h"
 #include "../lib_lexem/lexem.h"
 #include "../lib_polinom/polinom.h"
-#include "../lib_polinom/monom.h"
+#include "../lib_monom/monom.h"
 #include "../lib_bin_tree/TBinTree.h"
 #include "../lib_tree_output/TreeOut.h"
+#include "../lib_ht_shuffle/HTSuffle.h"
+#include "../lib_ht_lists/HTLists.h"
 #include "string.h"
 #include <chrono>
 
@@ -257,7 +259,66 @@ void Tree_Output2() {
     tree.tree_out(tree.head());
 }
 
+void combining_dict_htsuffle(HTSuffle<std::string, int>& hash1, HTSuffle<std::string, int>& hash2) {
+    HTSuffle<std::string, int> res = HTSuffle<std::string, int>(hash1.size()+hash2.size());
+    for (size_t i = 0; i < hash1.size(); i++) {
+        if (hash1.data().states()[i] != State::empty) {
+            res.insert(hash1.data()[i].first(), hash1.data()[i].second());
+        }
+    }
+    for (size_t i = 0; i < hash2.size(); i++) {
+        if (hash2.data().states()[i] != State::empty) {
+            try {
+                res.find(hash2.data()[i].first());
+            }
+            catch (std::logic_error&) {
+                res.insert(hash2.data()[i].first(), hash2.data()[i].second());
+            }
+        }
+    }
+    for (size_t i = 0; i < res.size(); i++) {
+        if (res.data().states()[i] != State::empty)
+            std::cout << "(" << res.data()[i].first() << ", " << res.data()[i].second() << ") ";
+    }
+    std::cout << std::endl;
+}
+
+//template<class TKey, class TVal>
+//void combining_dict_htlist(HTList<TKey, TVal>& hash1, HTList<TKey, TVal>& hash2) {
+//    HTList<TKey, TVal> res = HTList<TKey, TVal>(hash1.size() + hash2.size());
+//    for (size_t i = 0; i < hash1.size(); i++) {
+//        if (hash1.data().states()[i] != State::empty) {
+//            res.insert(hash1.data()[i].first(), hash1.data()[i].second());
+//        }
+//    }
+//    for (size_t i = 0; i < hash2.size(); i++) {
+//        if (hash2.data().states()[i] != State::empty) {
+//            res.insert(hash2.data()[i].first(), hash2.data()[i].second());
+//        }
+//    }
+//    for (size_t i = 0; i < res.size(); i++) {
+//        if (res.data().states()[i] != State::empty) {
+//            TNode<TDict<TKey, TVal>>* cur = res.data()[i]._head;
+//            while (cur != nullptr) {
+//                std::cout << cur->value() << " ";
+//                cur = cur->next();
+//            }
+//            std::cout << std::endl;
+//        }
+//    }
+//}
+
 int main() {
-    Tree_Output1();
+    HTSuffle<std::string, int> table1(4);
+    int s = table1.hash("абажур"); 
+    table1.insert("абажур", 1);
+    table1.insert("кинотеатр", 2);
+    table1.insert("самолет", 3);
+    table1.insert("человек", 4);
+    HTSuffle<std::string, int> table2(3);
+    table2.insert("кинотеатр", 15);
+    table2.insert("музыка", 16);
+    table2.insert("самолет", 17);
+    combining_dict_htsuffle(table1, table2);
 }
 #endif  // EASY_EXAMPLE

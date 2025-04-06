@@ -1,8 +1,10 @@
-#include <iostream>
-#include <algorithm>
+#include "iostream"
+#include "algorithm"
 #include "string"
-#include <cmath>
 #include "exception"
+#include "../lib_list/list.h"
+#include "../lib_list/node.h"
+#include "../lib_dmassive/TDmassive.h"
 #pragma once
 
 class CMonom {
@@ -10,17 +12,17 @@ public:
     float _coef;
     int* _powers;
     size_t _size;
-    CMonom();
-    CMonom(size_t size);
-    CMonom(std::string& str, char* names, size_t size = 3);
-    CMonom(float coef, int* mas, size_t size = 3);
-    CMonom(float coef, size_t size = 3);
-    CMonom(const CMonom& monom);
-    ~CMonom();
+    inline CMonom();
+    inline CMonom(size_t size);
+    inline CMonom(std::string& str, char* names, size_t size = 3);
+    inline CMonom(float coef, int* mas, size_t size = 3);
+    inline CMonom(float coef, size_t size = 3);
+    inline CMonom(const CMonom& monom);
+    inline ~CMonom();
 
-    CMonom& operator=(const CMonom& obj);
+    inline CMonom& operator=(const CMonom& obj);
 
-    friend std::istream& operator >> (std::istream& in, CMonom& monom) {
+    inline friend std::istream& operator >> (std::istream& in, CMonom& monom) {
         size_t size; float coef;
         std::cout << "Enter the number of variables of the monom: "; in >> size; monom._size = size;
         std::cout << "Enter the coef of the monom: "; in >> coef; monom._coef = coef;
@@ -32,7 +34,7 @@ public:
         return in;
     }
 
-    friend std::ostream& operator << (std::ostream& os, const CMonom& monom) {
+    inline friend std::ostream& operator << (std::ostream& os, const CMonom& monom) {
         os << "coef: " << monom._coef << std::endl;
         if (monom._coef == 0)
             return os;
@@ -46,40 +48,40 @@ public:
         return os;
     }
 
-    bool is_number(const char& symbol) const noexcept;
+    inline bool is_number(const char& symbol) const noexcept;
 
-    bool is_null() const noexcept;
+    inline bool is_null() const noexcept;
 
-    CMonom operator+(const CMonom& obj) const;
-    CMonom& operator+=(const CMonom& obj);
+    inline CMonom operator+(const CMonom& obj) const;
+    inline CMonom& operator+=(const CMonom& obj);
 
-    CMonom operator-(const CMonom& obj) const;
-    CMonom& operator-=(const CMonom& obj);
+    inline CMonom operator-(const CMonom& obj) const;
+    inline CMonom& operator-=(const CMonom& obj);
 
-    CMonom operator*(const CMonom& obj) const noexcept;
-    CMonom& operator*=(const CMonom& obj) noexcept;
+    inline CMonom operator*(const CMonom& obj) const noexcept;
+    inline CMonom& operator*=(const CMonom& obj) noexcept;
 
-    CMonom operator/(const CMonom& obj) const;
-    CMonom& operator/=(const CMonom& obj);
+    inline CMonom operator/(const CMonom& obj) const;
+    inline CMonom& operator/=(const CMonom& obj);
 
-    CMonom operator*(const float& value) const noexcept;
-    CMonom& operator*=(const float& value) noexcept;
+    inline CMonom operator*(const float& value) const noexcept;
+    inline CMonom& operator*=(const float& value) noexcept;
 
-    CMonom operator/(const float& value) const;
-    CMonom& operator/=(const float& value);
+    inline CMonom operator/(const float& value) const;
+    inline CMonom& operator/=(const float& value);
 
-    CMonom operator-() const noexcept;
-    CMonom& operator-() noexcept;
+    inline CMonom operator-() const noexcept;
+    inline CMonom& operator-() noexcept;
 
-    bool operator==(const CMonom& obj) const noexcept;
-    bool operator!=(const CMonom& obj) const noexcept;
+    inline bool operator==(const CMonom& obj) const noexcept;
+    inline bool operator!=(const CMonom& obj) const noexcept;
 
-    bool operator>(const CMonom& obj) const noexcept;
-    bool operator<(const CMonom& obj) const noexcept;
+    inline bool operator>(const CMonom& obj) const noexcept;
+    inline bool operator<(const CMonom& obj) const noexcept;
 
-    int convertInt(const std::string& str, size_t index) const noexcept;
+    inline int convertInt(const std::string& str, size_t index) const noexcept;
 
-    float valuePoint(const float* point) const noexcept;
+    inline float valuePoint(const float* point) const noexcept;
 };
 
 CMonom::CMonom() {
