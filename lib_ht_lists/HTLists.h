@@ -52,8 +52,10 @@ void HTList<TKey, TVal>::insert(TKey key, TVal value) {
 	size_t index = hash(key);
 	if (_data[index].find(TDict<TKey, TVal>(key, value)) != nullptr)
 		throw std::logic_error("There is already such a key.");
-	if (_data[index].isEmpty())
+	if (_data[index].isEmpty()) {
+		_data.states()[index] = State::busy;
 		_size++;
+	}
 	_data[index].push_back(TDict<TKey, TVal>(key, value));
 }
 
@@ -82,8 +84,10 @@ void HTList<TKey, TVal>::erase(TKey key) {
 	if (node == nullptr)
 		throw std::logic_error("key not found");
 	_data[index].erase(node);
-	if (_data[index].isEmpty())
+	if (_data[index].isEmpty()) {
+		_data.states()[index] = State::empty;
 		_size--;
+	}
 }
 
 template<class TKey, class TVal>

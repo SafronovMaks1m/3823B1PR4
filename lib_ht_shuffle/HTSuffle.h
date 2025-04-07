@@ -11,8 +11,11 @@ class HTSuffle : public ITable<TKey, TVal> {
 	TDMassive<TPair<TKey, TVal>> _data;
 	size_t _capacity;
 	size_t _size;
+	int h;
 public:
-	HTSuffle(size_t capacity) : _capacity(capacity), _data(capacity, true), _size(0) {};
+	HTSuffle(size_t capacity) : _capacity(capacity), _data(capacity, true), _size(0) {
+		h = mutually_prime_number();
+	};
 	bool is_full() const noexcept;
 	bool is_empty() const noexcept;
 	size_t hash(int key) const noexcept;
@@ -84,7 +87,6 @@ size_t HTSuffle<TKey, TVal>::search_index(TKey key) {
 
 template <class TKey, class TVal>
 void HTSuffle<TKey, TVal>::repeated_mixing(size_t& index, TKey key) {
-	int h = mutually_prime_number();
 	size_t result;
 	for (size_t i = 1; i < _capacity; i++) {
 		result = (index + i*h) % _capacity;
@@ -139,7 +141,6 @@ const TVal& HTSuffle<TKey, TVal>::find(TKey key) const{
 		return _data[index].second();
 	if (_data.states()[index] == State::empty)
 		throw std::logic_error("key not found");
-	int h = mutually_prime_number();
 	size_t result;
 	for (size_t i = 1; i < _capacity; i++) {
 		result = (index + i * h) % _capacity;

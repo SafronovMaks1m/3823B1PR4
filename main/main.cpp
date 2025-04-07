@@ -261,12 +261,13 @@ void Tree_Output2() {
 
 void combining_dict_htsuffle(HTSuffle<std::string, int>& hash1, HTSuffle<std::string, int>& hash2) {
     HTSuffle<std::string, int> res = HTSuffle<std::string, int>(hash1.size()+hash2.size());
-    for (size_t i = 0; i < hash1.size(); i++) {
+    for (size_t i = 0; i < hash1.capacity(); i++) {
         if (hash1.data().states()[i] != State::empty) {
             res.insert(hash1.data()[i].first(), hash1.data()[i].second());
         }
     }
-    for (size_t i = 0; i < hash2.size(); i++) {
+    std::cout << std::endl;
+    for (size_t i = 0; i < hash2.capacity(); i++) {
         if (hash2.data().states()[i] != State::empty) {
             try {
                 res.find(hash2.data()[i].first());
@@ -276,49 +277,65 @@ void combining_dict_htsuffle(HTSuffle<std::string, int>& hash1, HTSuffle<std::st
             }
         }
     }
-    for (size_t i = 0; i < res.size(); i++) {
+    for (size_t i = 0; i < res.capacity(); i++) {
         if (res.data().states()[i] != State::empty)
             std::cout << "(" << res.data()[i].first() << ", " << res.data()[i].second() << ") ";
     }
     std::cout << std::endl;
 }
 
-//template<class TKey, class TVal>
-//void combining_dict_htlist(HTList<TKey, TVal>& hash1, HTList<TKey, TVal>& hash2) {
-//    HTList<TKey, TVal> res = HTList<TKey, TVal>(hash1.size() + hash2.size());
-//    for (size_t i = 0; i < hash1.size(); i++) {
-//        if (hash1.data().states()[i] != State::empty) {
-//            res.insert(hash1.data()[i].first(), hash1.data()[i].second());
-//        }
-//    }
-//    for (size_t i = 0; i < hash2.size(); i++) {
-//        if (hash2.data().states()[i] != State::empty) {
-//            res.insert(hash2.data()[i].first(), hash2.data()[i].second());
-//        }
-//    }
-//    for (size_t i = 0; i < res.size(); i++) {
-//        if (res.data().states()[i] != State::empty) {
-//            TNode<TDict<TKey, TVal>>* cur = res.data()[i]._head;
-//            while (cur != nullptr) {
-//                std::cout << cur->value() << " ";
-//                cur = cur->next();
-//            }
-//            std::cout << std::endl;
-//        }
-//    }
-//}
+template<class TKey, class TVal>
+void combining_dict_htlist(HTList<TKey, TVal>& hash1, HTList<TKey, TVal>& hash2) {
+    HTList<TKey, TVal> res = HTList<TKey, TVal>(hash1.size() + hash2.size());
+    for (size_t i = 0; i < hash1.capacity(); i++) {
+        if (hash1.data().states()[i] != State::empty) {
+            TNode<TDict<TKey, TVal>>* cur = hash1.data()[i]._head;
+            while (cur != nullptr) {
+                res.insert(cur->value().key(), cur->value().value());
+                cur = cur->next();
+            }
+        }
+    }
+
+    for (size_t i = 0; i < hash2.capacity(); i++) {
+        if (hash2.data().states()[i] != State::empty) {
+            TNode<TDict<TKey, TVal>>* cur = hash2.data()[i]._head;
+            while (cur != nullptr) {
+                try {
+                    res.find(cur->value().key());
+                }
+                catch (std::logic_error&) {
+                    res.insert(cur->value().key(), cur->value().value());
+                }
+                cur = cur->next();
+            }
+        }
+    }
+    for (size_t i = 0; i < res.capacity(); i++) {
+        if (res.data().states()[i] != State::empty) {
+            TNode<TDict<TKey, TVal>>* cur = res.data()[i]._head;
+            while (cur != nullptr) {
+                std::cout << "(" << cur->value().key() << ", " << cur->value().value() << ") ";
+                cur = cur->next();
+            }
+        }
+    }
+    std::cout << std::endl;
+}
 
 int main() {
-    HTSuffle<std::string, int> table1(4);
-    int s = table1.hash("абажур"); 
-    table1.insert("абажур", 1);
-    table1.insert("кинотеатр", 2);
-    table1.insert("самолет", 3);
-    table1.insert("человек", 4);
-    HTSuffle<std::string, int> table2(3);
-    table2.insert("кинотеатр", 15);
-    table2.insert("музыка", 16);
-    table2.insert("самолет", 17);
-    combining_dict_htsuffle(table1, table2);
+    HTList<std::string, int> table1(4);
+    table1.insert("dfgdfg", 1);
+    size_t ind = table1.hash("dfgdfg");
+    table1.insert("ghfgh", 2);
+    table1.insert("fsdffds", 3);
+    table1.insert("kkjlkj", 4);
+    HTList<std::string, int> table2(5);
+    table2.insert("sdfsfd", 15);
+    table2.insert("cvbvcb", 16);
+    table2.insert("waewe", 17);
+    table2.insert("kkjlkj", 5);
+    table2.insert("dfgdfg", 3);
+    combining_dict_htlist(table1, table2);
 }
 #endif  // EASY_EXAMPLE
