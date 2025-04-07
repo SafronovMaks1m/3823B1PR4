@@ -5,6 +5,8 @@
 
 #include <iostream>
 #include <iomanip>
+#include <cstdlib>
+#include <ctime>
 #include "cmath"
 #include "../lib_easy_example/easy_example.h"
 #include "../lib_stack/stack.h"
@@ -19,6 +21,7 @@
 #include "../lib_tree_output/TreeOut.h"
 #include "../lib_ht_shuffle/HTSuffle.h"
 #include "../lib_ht_lists/HTLists.h"
+#include "../lib_dsu/dsu.h"
 #include "string.h"
 #include <chrono>
 
@@ -323,7 +326,7 @@ void combining_dict_htlist(HTList<TKey, TVal>& hash1, HTList<TKey, TVal>& hash2)
     std::cout << std::endl;
 }
 
-int main() {
+void example_hash() {
     HTList<std::string, int> table1(4);
     table1.insert("dfgdfg", 1);
     size_t ind = table1.hash("dfgdfg");
@@ -337,5 +340,57 @@ int main() {
     table2.insert("kkjlkj", 5);
     table2.insert("dfgdfg", 3);
     combining_dict_htlist(table1, table2);
+}
+
+size_t random_dsu() {
+    int s = rand() % 101;
+    return s;
+}
+
+void print_maze(TDMassive<int>& mas, size_t hight, size_t width) {
+    int s = std::to_string(mas[mas.size() - 1]).length();
+    for (size_t i = 0; i < mas.size(); i++) {
+        std::cout << std::string((s - std::to_string(mas[i]).length()), ' ') << mas[i] << "|";
+        if ((i + 1) % width == 0) {
+            std::cout << std::endl;
+            std::cout << std::string(width * (s + 1), '-') << std::endl;
+        }
+    }
+}
+
+void maze() {
+    srand(time(NULL));
+    size_t size = 25, hight = 5, width = 5;
+    TDMassive<int> mas(size);
+    DSU dsu(25);
+    for (size_t i = 0; i < size; i++)
+        mas.push_back(i+1);
+    print_maze(mas, hight, width);
+    size_t i = 0;
+    size_t rand_val;
+    while (i != size - 1) {
+        rand_val = random_dsu();
+        if (rand_val >= 0 && rand_val <= 50) {
+            if ((i + 1) % width != 0)
+                i += 1;
+            else
+                i += width;
+        }
+        else {
+            if (i / 5 < 4)
+                i += width;
+            else
+                i += 1;
+        }
+        dsu.uni(1, mas[i]);
+    }
+    for (size_t i = 0; i < size; i++) {
+        if (dsu.parent()[i] == 1)
+            std::cout << i + 1 << " ";
+    }
+}
+
+int main() {
+    maze();
 }
 #endif  // EASY_EXAMPLE

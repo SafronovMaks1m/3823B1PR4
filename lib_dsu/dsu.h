@@ -60,9 +60,6 @@ void DSU::uni(int first, int second) {
 		_parent[top2 - 1] = top1;
 		_rank[top1 - 1] += 1;
 	}
-	for (size_t i = 0; i < _size; i++) {
-		std::cout << _parent[i] << " ";
-	}
 	std::cout << std::endl;
 }
 
