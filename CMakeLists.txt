@@ -37,6 +37,7 @@ add_subdirectory(lib_max_heap)
 add_subdirectory(lib_min_heap)
 add_subdirectory(lib_ht_shuffle)
 add_subdirectory(lib_ht_lists)
+add_subdirectory(lib_rbtree)
 add_subdirectory(main)                # подключаем дополнительный CMakeLists.txt из подкаталога с именем main
 
 option(BTEST "build test?" ON)        # указываем подключаем ли google-тесты (ON или YES) или нет (OFF или NO)
