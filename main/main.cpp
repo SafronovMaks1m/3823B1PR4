@@ -347,7 +347,11 @@ size_t random_dsu() {
     return s;
 }
 
-void print_maze(TDMassive<int>& mas, size_t hight, size_t width) {
+void cursor_move(int y, int x) {
+    std::cout << "\033[" << y << ";" << x << "H";
+}
+
+void print_maze(TDMassive<int>& mas, size_t width) {
     int s = std::to_string(mas[mas.size() - 1]).length();
     for (size_t i = 0; i < mas.size(); i++) {
         std::cout << std::string((s - std::to_string(mas[i]).length()), ' ') << mas[i] << "|";
@@ -358,6 +362,38 @@ void print_maze(TDMassive<int>& mas, size_t hight, size_t width) {
     }
 }
 
+void print_ending_maze(TDMassive<int>& mas, DSU& dsu, size_t width, size_t hight, int cursor_j) {
+    int s = std::to_string(mas[mas.size() - 1]).length();
+    for (size_t i = 0; i < hight; i++) {
+        cursor_move(i * 2 + 1, cursor_j);
+        for (size_t j = 0; j < width; j++) {
+            size_t k = i * hight + j;
+            std::cout << std::string((s - std::to_string(mas[k]).length()), ' ') << mas[k];
+            if (dsu.parent()[k] == 1) {
+                if (dsu.parent()[k + 1] == 1) {
+                    cursor_move(i * 2 + 2, cursor_j + (j * s + j));
+                    std::cout << std::string(s + 1, '-'); 
+                    cursor_move(i * 2 + 1, cursor_j+((j + 1) * s + j));
+                    std::cout << ' ';
+
+                }
+                else {
+                    std::cout << '|';
+                }
+            }
+            else {
+                cursor_move(i * 2 + 2, cursor_j + (j * s + j));
+                std::cout << std::string(s + 1, '-');
+                cursor_move(i * 2 + 1, cursor_j + ((j + 1) * s + j));
+                std::cout << '|';
+            }
+        }
+        std::cout << std::endl << std::endl;
+    }
+    cursor_move(hight * 2, cursor_j + s * (width - 1)+ (width - 1));
+    std::cout << std::string(s + 1, '-');
+}
+
 void maze() {
     srand(time(NULL));
     size_t size = 25, hight = 5, width = 5;
@@ -365,7 +401,7 @@ void maze() {
     DSU dsu(25);
     for (size_t i = 0; i < size; i++)
         mas.push_back(i+1);
-    print_maze(mas, hight, width);
+    print_maze(mas, width);
     size_t i = 0;
     size_t rand_val;
     while (i != size - 1) {
@@ -388,6 +424,9 @@ void maze() {
         if (dsu.parent()[i] == 1)
             std::cout << i + 1 << " ";
     }
+    std::cout << std::endl;
+    int cursor_j = std::to_string(mas[mas.size() - 1]).length() * width + width + 7;
+    print_ending_maze(mas, dsu, width, hight, cursor_j);
 }
 
 int main() {
