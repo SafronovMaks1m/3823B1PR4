@@ -22,6 +22,7 @@
 #include "../lib_ht_shuffle/HTSuffle.h"
 #include "../lib_ht_lists/HTLists.h"
 #include "../lib_dsu/dsu.h"
+#include "../lib_rbtree/RBTree.h"
 #include "string.h"
 #include <chrono>
 
@@ -238,16 +239,16 @@ void Check_value_point() {
 
 void Tree_Output1() {
     BSearchTree<int> tree;
+    tree.insert(7);
+    tree.insert(5);
+    tree.insert(8);
     tree.insert(2);
+    tree.insert(6);
+    tree.insert(9);
     tree.insert(1);
-    tree.insert(121);
-    tree.insert(123);
-    tree.insert(125111);
-    tree.insert(1000001);
-    tree.insert(0);
-    tree.insert(4);
-    tree.insert(18);
     tree.insert(3);
+    tree.insert(10);
+    tree.insert(0);
     tree.tree_out(tree.head());
 }
 
@@ -259,6 +260,21 @@ void Tree_Output2() {
     tree.insert(2);
     tree.insert(4);
     tree.insert(7);
+    tree.tree_out(tree.head());
+}
+
+void Tree_Output_RB() {
+    RBTree<int> tree;
+    tree.insert(7);
+    tree.insert(5);
+    tree.insert(8);
+    tree.insert(2);
+    tree.insert(6);
+    tree.insert(9);
+    tree.insert(1);
+    tree.insert(3);
+    tree.insert(10);
+    tree.insert(0);
     tree.tree_out(tree.head());
 }
 
@@ -430,6 +446,6 @@ void maze() {
 }
 
 int main() {
-    maze();
+    Tree_Output_RB();
 }
 #endif  // EASY_EXAMPLE

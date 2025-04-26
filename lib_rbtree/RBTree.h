@@ -1,3 +1,7 @@
+#include "exception"
+#include "iostream"
+#include "string"
+#include <Windows.h>
 #include "../lib_rbtree/RBtreeNode.h"
 #pragma once
 
@@ -21,6 +25,11 @@ class RBTree {
 		void clear(RBtreeNode<T>* node) noexcept;
 		~RBTree();
 		RBtreeNode<T>* head();
+		void tree_out(RBtreeNode<T>* node, bool flag = false) noexcept;
+		void cursor_move(int y, int x);
+		void print_branch(RBtreeNode<T>* node);
+		void calculating_coordinates(RBtreeNode<T>* node, bool flag);
+		void coordinates_after_branch_formed(RBtreeNode<T>* node, bool flag);
 };
 
 template <class T>
@@ -215,4 +224,102 @@ RBtreeNode<T>* RBTree<T>::search(T val) const noexcept {
 			return cur;
 	}
 	return nullptr;
+}
+
+
+
+
+template <class T>
+void RBTree<T>::cursor_move(int y, int x) {
+	std::cout << "\033[" << y << ";" << x << "H";
+}
+
+template<class T>
+void RBTree<T>::calculating_coordinates(RBtreeNode<T>* node, bool flag) {
+	if (node->value() != _head->value() && width == 100) {
+		depth += 3;
+		if (flag == false)
+			width -= width_sub;
+		else
+			width += (total + 1 + total / 2);
+		total /= 2;
+	}
+	else if (node->value() != _head->value()) {
+		depth += 3;
+		if (flag == false) {
+			total -= total_sub;
+			width_sub -= total_sub; width -= width_sub;
+		}
+		else {
+			total -= total_sub;
+			width += width_sub + total_sub; width_sub -= total_sub;
+		}
+	}
+	else {
+		Depth(node);
+		total_sub = max_dept;
+		total = max_dept * (max_dept - 2) * 2;
+		width_sub = (total / 2) + 1;
+	}
+}
+
+template<class T>
+void Depth(RBtreeNode<T>* node) {
+	if (node == nullptr) return;
+	count += 1;
+	Depth(node->left());
+	Depth(node->right());
+	max_dept = count > max_dept ? count : max_dept;
+	count -= 1;
+}
+
+template <class T>
+void RBTree<T>::print_branch(RBtreeNode<T>* node) {
+	HANDLE console_color = GetStdHandle(STD_OUTPUT_HANDLE);
+	cursor_move(depth, width + total + 1); 
+	if (node->color())
+		SetConsoleTextAttribute(console_color, 3);
+	else
+		SetConsoleTextAttribute(console_color, 4);
+	std::cout << node->value();
+	SetConsoleTextAttribute(console_color, 7);
+	if (node->left() != nullptr || node->right() != nullptr) {
+		if (node->left() != nullptr) {
+			cursor_move(depth, width);
+			std::cout << "." << std::string(total, '-');
+			cursor_move(depth + 1, width); std::cout << "|"; cursor_move(depth + 2, width); std::cout << "|";
+		}
+		if (node->right() != nullptr) {
+			int size_value = std::to_string(node->value()).size();
+			cursor_move(depth, width + total + 1 + size_value);
+			std::cout << std::string(total, '-') << ".";
+			cursor_move(depth + 1, width + total * 2 + 1 + size_value);  std::cout << "|"; cursor_move(depth + 2, width + total * 2 + 1 + size_value); std::cout << "|";
+		}
+	}
+}
+
+template <class T>
+void RBTree<T>::coordinates_after_branch_formed(RBtreeNode<T>* node, bool flag) {
+	depth -= 3;
+	if (flag == false) {
+		if (_head->left()->value() == node->value()) {
+			total *= 2; width += width_sub;
+		}
+		else {
+			width += width_sub; total += total_sub; width_sub += total_sub;
+		}
+	}
+	else {
+		total += total_sub; width_sub += total_sub; width -= width_sub + total_sub;
+	}
+}
+
+template<class T>
+void RBTree<T>::tree_out(RBtreeNode<T>* node, bool flag) noexcept {
+	if (node == nullptr) return;
+	calculating_coordinates(node, flag);
+	print_branch(node);
+	tree_out(node->left(), false);
+	tree_out(node->right(), true);
+	coordinates_after_branch_formed(node, flag);
 }
