@@ -2,7 +2,7 @@
 #include "iostream"
 #include "algorithm"
 #include "../lib_DMassive/TDmassive.h"
-#include "../lib_vector/TVector.h"
+#include "../lib_matrix/TVector.h"
 
 TEST(TestTVectorLib, check_constructor_mas) {
 	int* arr = new int[4];

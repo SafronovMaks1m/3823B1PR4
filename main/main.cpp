@@ -5,6 +5,8 @@
 
 #include <iostream>
 #include <iomanip>
+#include <cstdlib>
+#include <ctime>
 #include "cmath"
 #include "../lib_easy_example/easy_example.h"
 #include "../lib_stack/stack.h"
@@ -14,7 +16,13 @@
 #include "../lib_list/node.h"
 #include "../lib_lexem/lexem.h"
 #include "../lib_polinom/polinom.h"
-#include "../lib_polinom/monom.h"
+#include "../lib_monom/monom.h"
+#include "../lib_bin_tree/TBinTree.h"
+#include "../lib_tree_output/TreeOut.h"
+#include "../lib_ht_shuffle/HTSuffle.h"
+#include "../lib_ht_lists/HTLists.h"
+#include "../lib_dsu/dsu.h"
+#include "../lib_rbtree/RBTree.h"
 #include "string.h"
 #include <chrono>
 
@@ -229,7 +237,215 @@ void Check_value_point() {
     polinom.valuePoint(); std::cout << 3.15 * pow(2, 2) * 3 * pow(2, 3) + 2 * 3 * 2 + 6 * pow(3, 2) * pow(2, 5);
 }
 
+void Tree_Output1() {
+    BSearchTree<int> tree;
+    tree.insert(7);
+    tree.insert(5);
+    tree.insert(8);
+    tree.insert(2);
+    tree.insert(6);
+    tree.insert(9);
+    tree.insert(1);
+    tree.insert(3);
+    tree.insert(10);
+    tree.insert(0);
+    tree.tree_out(tree.head());
+}
+
+void Tree_Output2() {
+    BSearchTree<int> tree;
+    tree.insert(5);
+    tree.insert(3);
+    tree.insert(6);
+    tree.insert(2);
+    tree.insert(4);
+    tree.insert(7);
+    tree.tree_out(tree.head());
+}
+
+void Tree_Output_RB() {
+    RBTree<int> tree;
+    tree.insert(7);
+    tree.insert(5);
+    tree.insert(8);
+    tree.insert(2);
+    tree.insert(6);
+    tree.insert(9);
+    tree.insert(1);
+    tree.insert(3);
+    tree.insert(10);
+    tree.insert(0);
+    tree.tree_out(tree.head());
+}
+
+void combining_dict_htsuffle(HTSuffle<std::string, int>& hash1, HTSuffle<std::string, int>& hash2) {
+    HTSuffle<std::string, int> res = HTSuffle<std::string, int>(hash1.size()+hash2.size());
+    for (size_t i = 0; i < hash1.capacity(); i++) {
+        if (hash1.data().states()[i] != State::empty) {
+            res.insert(hash1.data()[i].first(), hash1.data()[i].second());
+        }
+    }
+    std::cout << std::endl;
+    for (size_t i = 0; i < hash2.capacity(); i++) {
+        if (hash2.data().states()[i] != State::empty) {
+            try {
+                res.find(hash2.data()[i].first());
+            }
+            catch (std::logic_error&) {
+                res.insert(hash2.data()[i].first(), hash2.data()[i].second());
+            }
+        }
+    }
+    for (size_t i = 0; i < res.capacity(); i++) {
+        if (res.data().states()[i] != State::empty)
+            std::cout << "(" << res.data()[i].first() << ", " << res.data()[i].second() << ") ";
+    }
+    std::cout << std::endl;
+}
+
+template<class TKey, class TVal>
+void combining_dict_htlist(HTList<TKey, TVal>& hash1, HTList<TKey, TVal>& hash2) {
+    HTList<TKey, TVal> res = HTList<TKey, TVal>(hash1.size() + hash2.size());
+    for (size_t i = 0; i < hash1.capacity(); i++) {
+        if (hash1.data().states()[i] != State::empty) {
+            TNode<TDict<TKey, TVal>>* cur = hash1.data()[i]._head;
+            while (cur != nullptr) {
+                res.insert(cur->value().key(), cur->value().value());
+                cur = cur->next();
+            }
+        }
+    }
+
+    for (size_t i = 0; i < hash2.capacity(); i++) {
+        if (hash2.data().states()[i] != State::empty) {
+            TNode<TDict<TKey, TVal>>* cur = hash2.data()[i]._head;
+            while (cur != nullptr) {
+                try {
+                    res.find(cur->value().key());
+                }
+                catch (std::logic_error&) {
+                    res.insert(cur->value().key(), cur->value().value());
+                }
+                cur = cur->next();
+            }
+        }
+    }
+    for (size_t i = 0; i < res.capacity(); i++) {
+        if (res.data().states()[i] != State::empty) {
+            TNode<TDict<TKey, TVal>>* cur = res.data()[i]._head;
+            while (cur != nullptr) {
+                std::cout << "(" << cur->value().key() << ", " << cur->value().value() << ") ";
+                cur = cur->next();
+            }
+        }
+    }
+    std::cout << std::endl;
+}
+
+void example_hash() {
+    HTList<std::string, int> table1(4);
+    table1.insert("dfgdfg", 1);
+    size_t ind = table1.hash("dfgdfg");
+    table1.insert("ghfgh", 2);
+    table1.insert("fsdffds", 3);
+    table1.insert("kkjlkj", 4);
+    HTList<std::string, int> table2(5);
+    table2.insert("sdfsfd", 15);
+    table2.insert("cvbvcb", 16);
+    table2.insert("waewe", 17);
+    table2.insert("kkjlkj", 5);
+    table2.insert("dfgdfg", 3);
+    combining_dict_htlist(table1, table2);
+}
+
+size_t random_dsu() {
+    int s = rand() % 101;
+    return s;
+}
+
+void cursor_move(int y, int x) {
+    std::cout << "\033[" << y << ";" << x << "H";
+}
+
+void print_maze(TDMassive<int>& mas, size_t width) {
+    int s = std::to_string(mas[mas.size() - 1]).length();
+    for (size_t i = 0; i < mas.size(); i++) {
+        std::cout << std::string((s - std::to_string(mas[i]).length()), ' ') << mas[i] << "|";
+        if ((i + 1) % width == 0) {
+            std::cout << std::endl;
+            std::cout << std::string(width * (s + 1), '-') << std::endl;
+        }
+    }
+}
+
+void print_ending_maze(TDMassive<int>& mas, DSU& dsu, size_t width, size_t hight, int cursor_j) {
+    int s = std::to_string(mas[mas.size() - 1]).length();
+    for (size_t i = 0; i < hight; i++) {
+        cursor_move(i * 2 + 1, cursor_j);
+        for (size_t j = 0; j < width; j++) {
+            size_t k = i * hight + j;
+            std::cout << std::string((s - std::to_string(mas[k]).length()), ' ') << mas[k];
+            if (dsu.parent()[k] == 1) {
+                if (dsu.parent()[k + 1] == 1) {
+                    cursor_move(i * 2 + 2, cursor_j + (j * s + j));
+                    std::cout << std::string(s + 1, '-'); 
+                    cursor_move(i * 2 + 1, cursor_j+((j + 1) * s + j));
+                    std::cout << ' ';
+
+                }
+                else {
+                    std::cout << '|';
+                }
+            }
+            else {
+                cursor_move(i * 2 + 2, cursor_j + (j * s + j));
+                std::cout << std::string(s + 1, '-');
+                cursor_move(i * 2 + 1, cursor_j + ((j + 1) * s + j));
+                std::cout << '|';
+            }
+        }
+        std::cout << std::endl << std::endl;
+    }
+    cursor_move(hight * 2, cursor_j + s * (width - 1)+ (width - 1));
+    std::cout << std::string(s + 1, '-');
+}
+
+void maze() {
+    srand(time(NULL));
+    size_t size = 25, hight = 5, width = 5;
+    TDMassive<int> mas(size);
+    DSU dsu(25);
+    for (size_t i = 0; i < size; i++)
+        mas.push_back(i+1);
+    print_maze(mas, width);
+    size_t i = 0;
+    size_t rand_val;
+    while (i != size - 1) {
+        rand_val = random_dsu();
+        if (rand_val >= 0 && rand_val <= 50) {
+            if ((i + 1) % width != 0)
+                i += 1;
+            else
+                i += width;
+        }
+        else {
+            if (i / 5 < 4)
+                i += width;
+            else
+                i += 1;
+        }
+        dsu.uni(1, mas[i]);
+    }
+    for (size_t i = 0; i < size; i++) {
+        if (dsu.parent()[i] == 1)
+            std::cout << i + 1 << " ";
+    }
+    std::cout << std::endl;
+    int cursor_j = std::to_string(mas[mas.size() - 1]).length() * width + width + 7;
+    print_ending_maze(mas, dsu, width, hight, cursor_j);
+}
+
 int main() {
-    Check_calculate_polinom();
+    Tree_Output_RB();
 }
 #endif  // EASY_EXAMPLE

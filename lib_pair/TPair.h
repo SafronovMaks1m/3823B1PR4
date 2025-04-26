@@ -5,16 +5,12 @@
 #include <string>
 #include <stdexcept>
 
-template <class T1, class T2> class TPair;
-template <class T1, class T2>
-std::ostream& operator<<(std::ostream& out, const TPair<T1, T2>& obj);
-
 template <class T1, class T2>
 class TPair {
     T1 _first;
     T2 _second;
 public:
-    TPair() : _first(0), _second(0) { }
+    TPair() = default;
     TPair(const T1& first, const T2& second) : _first(first), _second(second) { }
     TPair(const TPair& pair) : _first(pair._first), _second(pair._second) { }
     ~TPair() { }
@@ -22,7 +18,9 @@ public:
     TPair& make_pair(const T1& first, const T2& second) noexcept;
 
     inline T1 first() const noexcept;
-    inline T2 second() const noexcept;
+    inline const T2& second() const noexcept;
+    inline T2& second() noexcept;
+
     inline void set_first(const T1& value) noexcept;
     inline void set_second(const T2& value) noexcept;
 
@@ -43,7 +41,10 @@ public:
 
     std::string to_string() const noexcept;
 
-    friend std::ostream& operator<< (std::ostream& out, const TPair<T1, T2>& pair) noexcept;
+    friend std::ostream& operator<< (std::ostream& out, const TPair<T1, T2>& pair) noexcept {
+        out << pair.to_string();
+        return out;
+    }
 };
 
 template <class T1, class T2>
@@ -59,7 +60,12 @@ inline T1 TPair<T1, T2>::first() const noexcept {
 }
 
 template <class T1, class T2>
-inline T2 TPair<T1, T2>::second() const noexcept {
+inline const T2& TPair<T1, T2>::second() const noexcept {
+    return _second;
+}
+
+template <class T1, class T2>
+inline T2& TPair<T1, T2>::second() noexcept {
     return _second;
 }
 
@@ -93,7 +99,7 @@ template <class T1, class T2>
 TPair<T1, T2> TPair<T1, T2>::operator+(const TPair<T1, T2>& pair) const noexcept {
     TPair<T1, T2> temp;
     temp._first = _first+pair._first;
-    temp._second += _second+pair._second;
+    temp._second = _second+pair._second;
     return temp;
 }
 
@@ -157,14 +163,13 @@ TPair<T1, T2> TPair<T1, T2>::operator-(const TPair<T1, T2>& pair) const noexcept
 
 template <class T1, class T2>
 std::string TPair<T1, T2>::to_string() const noexcept {
-    std::string str = "(" + std::to_string(_first) + ", " + std::to_string(_second) + ")";
+    std::string str = "(";
+    if (typeid(_first) == typeid(std::string))
+        str += _first;
+    else
+        str += std::to_string(_first);
+    str += ", " + std::to_string(_second) + ")";
     return str;
-}
-
-template <class T1, class T2>
-std::ostream& operator<<(std::ostream& out, const TPair<T1, T2>& pair) {
-    out << pair.to_string();
-    return out;
 }
 
 #endif  // LIB_PAIR_PAIR_H_

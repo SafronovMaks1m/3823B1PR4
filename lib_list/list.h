@@ -62,6 +62,9 @@ private:
             _pcur = _pcur->next();
             return *this;
         }
+        TNode<T>* pcur() {
+            return _pcur;
+        }
         bool operator!=(const TIterator& iter) const noexcept {
             return _pcur != iter._pcur;
         }
@@ -159,11 +162,12 @@ void Tlist<T>::push_back(const T& value) noexcept {
     TNode<T>* node = new TNode<T>(value);
     if (isEmpty()) {
         _head = node;
+        _tail = node;
     }
     else {
         _tail->next(node);
+        _tail = node;
     }
-    _tail = node;
 }
 
 template <class T>

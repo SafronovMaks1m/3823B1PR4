@@ -6,7 +6,7 @@ class TNode {
     T _value;
     TNode <T>* _pnext;
 public:
-    TNode(T value = 1, TNode <T>* node = nullptr);
+    TNode(const T& value = 1, TNode <T>* node = nullptr);
     TNode(const TNode<T>& node);
     TNode<T>& operator = (const TNode <T>& node);
     const TNode <T>* next() const;
@@ -20,7 +20,7 @@ public:
 };
 
 template <class T>
-TNode<T>::TNode(T value, TNode <T>* node) {
+TNode<T>::TNode(const T& value, TNode <T>* node) {
     _value = value;
     _pnext = node;
 }
